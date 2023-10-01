@@ -1,39 +1,44 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const app = document.getElementById('app');
-  const langBtn = document.getElementById('langBtn');
-  const title = document.getElementById('title');
-  const welcome = document.getElementById('welcome');
-  const copyright = document.getElementById('copyright');
-  const privacy = document.getElementById('privacy');
+// Dark and Light Mode Detection and Implementation
+const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
 
-  // Detect user's preferred theme
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (prefersDark) {
-    app.classList.add('dark-theme');
-  }
+const body = document.getElementById("body");
+const html = document.getElementById("html");
 
-  // Language switcher
-  let lang = 'en';
-  const translations = {
-    en: {
-      title: 'DE INLOOP',
-      welcome: 'Welcome to DE INLOOP in Sint-Niklaas.',
-      copyright: 'Copyright © De Inloop',
-      privacy: 'Privacy Policy'
-    },
-    nl: {
-      title: 'DE INLOOP',
-      welcome: 'Welkom bij DE INLOOP in Sint-Niklaas.',
-      copyright: 'Auteursrecht © De Inloop',
-      privacy: 'Privacybeleid'
+if (prefersDarkScheme.matches) {
+    body.classList.add("bg-black", "text-white");
+    html.querySelectorAll(".title-color").forEach(el => {
+        el.classList.replace("title-color", "text-orange-500");
+    });
+}
+
+// Language Selection Button Logic
+const langButton = document.getElementById("langButton");
+
+const enText = {
+    title: "Your Support, Their Future",
+    subtitle: "Social Walk-In Center ‘DE INLOOP’ in Sint-Niklaas",
+    // ... More content
+};
+
+const nlText = {
+    title: "Jouw Steun, Hun Toekomst",
+    subtitle: "Sociaal inloopcentrum 'DE INLOOP' in Sint-Niklaas",
+    // ... More content
+};
+
+let currentLang = "en";
+
+langButton.addEventListener("click", () => {
+    if (currentLang === "en") {
+        currentLang = "nl";
+        langButton.textContent = "Nederlands";
+    } else {
+        currentLang = "en";
+        langButton.textContent = "English";
     }
-  };
 
-  langBtn.addEventListener('click', () => {
-    lang = lang === 'en' ? 'nl' : 'en';
-    title.textContent = translations[lang].title;
-    welcome.textContent = translations[lang].welcome;
-    copyright.textContent = translations[lang].copyright;
-    privacy.textContent = translations[lang].privacy;
-  });
+    Object.keys(enText).forEach(key => {
+        const el = document.querySelector(`[data-lang="${key}"]`);
+        el.textContent = currentLang === "en" ? enText[key] : nlText[key];
+    });
 });
