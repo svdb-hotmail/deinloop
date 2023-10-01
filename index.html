@@ -1,35 +1,32 @@
 <!DOCTYPE html>
-<html lang="en" id="main-html">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Social Walk-In Center 'DE INLOOP'</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <style>
-      .title-color {
-        color: orange;
-      }
-    </style>
-    <script src="script.js" defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DE INLOOP</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .dark-theme {
+      background-color: black;
+      color: white;
+    }
+    .dark-theme h1, .dark-theme h2, .dark-theme h3 {
+      color: orange;
+    }
+  </style>
 </head>
-<body class="font-sans bg-black text-white">
-    <header class="bg-black p-4">
-        <div class="flex justify-between">
-            <div class="flex justify-center">
-                <!-- English Logo placeholder -->
-                <!-- <img src="https://[YourGitHubUsername].github.io/[YourRepoName]/assets/logo_en.png" alt="Logo" class="w-32 h-32" id="logo-en"> -->
-                <!-- Dutch Logo placeholder -->
-                <!-- <img src="https://[YourGitHubUsername].github.io/[YourRepoName]/assets/logo_nl.png" alt="Logo" class="w-32 h-32" id="logo-nl"> -->
-            </div>
-            <button id="language-switch" class="bg-white text-black p-2 rounded">EN</button>
-        </div>
-        <h1 class="text-center text-4xl title-color mb-4" id="main-title">Your Support, Their Future</h1>
-        <h2 class="text-center text-xl" id="sub-title">Social Walk-In Center ‘DE INLOOP’ in Sint-Niklaas</h2>
-    </header>
-    <!-- ...rest of the content... -->
-    <footer class="text-center p-4">
-        <p>© Copiright De Inloop</p>
+<body class="bg-white text-black">
+  <div id="app">
+    <img src="assets/logo.png" alt="Logo" class="mx-auto my-4">
+    <h1 class="text-center text-4xl" id="title">DE INLOOP</h1>
+    <p class="text-center text-lg" id="welcome">Welcome to DE INLOOP in Sint-Niklaas.</p>
+    <button id="langBtn" class="bg-blue-500 text-white p-2 rounded">Switch Language</button>
+    <img src="assets/flyer.png" alt="Flyer" class="mx-auto my-4">
+    <footer class="text-center">
+      <p id="copyright">Copyright © De Inloop</p>
+      <a href="#" id="privacy">Privacy Policy</a>
     </footer>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
-
-
