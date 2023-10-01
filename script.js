@@ -1,27 +1,39 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const langSwitch = document.getElementById('language-switch');
-  let isEnglish = true;
-  
-  const enText = {
-    'main-title': 'Your Support, Their Future',
-    'sub-title': 'Social Walk-In Center ‘DE INLOOP’ in Sint-Niklaas',
-    // ...rest of English content
-  };
+document.addEventListener('DOMContentLoaded', () => {
+  const app = document.getElementById('app');
+  const langBtn = document.getElementById('langBtn');
+  const title = document.getElementById('title');
+  const welcome = document.getElementById('welcome');
+  const copyright = document.getElementById('copyright');
+  const privacy = document.getElementById('privacy');
 
-  const nlText = {
-    'main-title': 'Jouw Steun, Hun Toekomst',
-    'sub-title': 'Sociaal Inloopcentrum ‘DE INLOOP’ in Sint-Niklaas',
-    // ...rest of Dutch content
-  };
+  // Detect user's preferred theme
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (prefersDark) {
+    app.classList.add('dark-theme');
+  }
 
-  langSwitch.addEventListener('click', () => {
-    isEnglish = !isEnglish;
-    langSwitch.textContent = isEnglish ? 'EN' : 'NL';
-
-    const contentToUse = isEnglish ? enText : nlText;
-    
-    for (const [key, value] of Object.entries(contentToUse)) {
-      document.getElementById(key).textContent = value;
+  // Language switcher
+  let lang = 'en';
+  const translations = {
+    en: {
+      title: 'DE INLOOP',
+      welcome: 'Welcome to DE INLOOP in Sint-Niklaas.',
+      copyright: 'Copyright © De Inloop',
+      privacy: 'Privacy Policy'
+    },
+    nl: {
+      title: 'DE INLOOP',
+      welcome: 'Welkom bij DE INLOOP in Sint-Niklaas.',
+      copyright: 'Auteursrecht © De Inloop',
+      privacy: 'Privacybeleid'
     }
+  };
+
+  langBtn.addEventListener('click', () => {
+    lang = lang === 'en' ? 'nl' : 'en';
+    title.textContent = translations[lang].title;
+    welcome.textContent = translations[lang].welcome;
+    copyright.textContent = translations[lang].copyright;
+    privacy.textContent = translations[lang].privacy;
   });
 });
