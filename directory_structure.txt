@@ -1,0 +1,8 @@
+YourRepoName/
+├── assets/
+│   ├── logo_en.png
+│   ├── logo_nl.png
+│   ├── flyer_en.png
+│   └── flyer_nl.png
+├── index.html
+└── script.js
