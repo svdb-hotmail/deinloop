@@ -2,59 +2,78 @@
 <html lang="en" id="html">
 <head>
     <meta charset="UTF-8">
-    <title>Social Walk-In Center 'DE INLOOP'</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang data-en="Social Walk-In Center 'DE INLOOP'" data-nl="Sociaal Inloopcentrum 'DE INLOOP'">Social Walk-In Center 'DE INLOOP'</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="script.js" defer></script>
+    <style>
+        .title-color {
+            color: #FFA500;
+        }
+    </style>
 </head>
-<body class="font-sans bg-white text-black transition duration-500 ease-in-out" id="body">
-    <header class="bg-white p-4 transition duration-500 ease-in-out">
-        <div class="flex justify-end">
-            <button id="langButton">English</button>
-        </div>
-        <div class="flex justify-center">
-            <img src="assets/logo.jpg" alt="Logo" class="w-32 h-32">
-        </div>
-        <h1 class="text-center text-4xl title-color mb-4" data-lang="title">Your Support, Their Future</h1>
-        <h2 class="text-center text-xl" data-lang="subtitle">Social Walk-In Center ‘DE INLOOP’ in Sint-Niklaas</h2>
-    </header>
-    <main class="p-8 transition duration-500 ease-in-out">
-    <section class="mb-8">
-        <h3 class="text-center text-2xl title-color mb-2" data-lang="mission-title">“Extending More Than Just a Hand—Creating Lifelong Impact”</h3>
-        <h4 class="text-xl mb-4" data-lang="mission-subtitle">Our Mission</h4>
-        <p data-lang="mission-body">Become the hub of Sint-Niklaas where everyone finds a sanctuary, particularly those at risk of poverty. We’re more than just a listening ear; we provide actionable social advice and resources to cover life’s essentials.</p>
-    </section>
+<body class="font-sans bg-white text-black dark:bg-black dark:text-white" id="body">
+    <div class="container mx-auto max-w-screen-lg">
+        <header class="bg-white dark:bg-black p-4">
+			<div class="flex justify-center">
+				<img src="assets/logo_placeholder.png" alt="Logo" class="w-32 h-32">
+			</div>
+			<h1 class="text-center text-4xl title-color mb-4">Your Support, Their Future</h1>
+			<h2 class="text-center text-xl">Social Walk-In Center ‘DE INLOOP’ in Sint-Niklaas</h2>
+			<h3 class="text-center text-2xl title-color mb-2">“Extending More Than Just a Hand—Creating Lifelong Impact”</h3>
+			<!-- Language Selection -->
+			<div class="text-right">
+				<button onclick="changeLanguage('en')">EN</button>
+				<button onclick="changeLanguage('nl')">NL</button>
+			</div>
+        </header>
+        <main class="p-8">
+			<section class="mb-8">
+				<h4 class="text-xl title-color mb-4">Our Mission</h4>
+				<p>Become the hub of Sint-Niklaas where everyone finds a sanctuary, particularly those at risk of poverty. We’re more than just a listening ear; we provide actionable social advice and resources to cover life’s essentials.</p>
+			</section>
+			
+			<section class="mb-8">
+				<h4 class="text-xl title-color mb-4">Our Vision</h4>
+				<p>We see DE INLOOP as a transformative space, rooted in respect and equality. Our doors are open to everyone, irrespective of background or beliefs. Here, individuals gain the resources and support to carve out their own pathways in life.</p>
+			</section>
 
-    <section class="mb-8">
-        <h4 class="text-xl title-color mb-4" data-lang="vision-title">Our Vision</h4>
-        <p data-lang="vision-body">We see DE INLOOP as a transformative space, rooted in respect and equality. Our doors are open to everyone, irrespective of background or beliefs. Here, individuals gain the resources and support to carve out their own pathways in life.</p>
-    </section>
+			<section class="mb-8">
+				<h4 class="text-xl title-color mb-4">Our Goals</h4>
+				<p>Beyond offering essential goods like clothing and food, we aim to be a catalyst for personal growth and societal contribution. Our facilities, including an educational hub and activity center, foster skill development and community building. We’re more than a giveaway shop; we’re a lifeline for development and social interaction.</p>
+			</section>
 
-    <section class="mb-8">
-        <h4 class="text-xl title-color mb-4" data-lang="goals-title">Our Goals</h4>
-        <p data-lang="goals-body">Beyond offering essential goods like clothing and food, we aim to be a catalyst for personal growth and societal contribution. Our facilities, including an educational hub and activity center, foster skill development and community building. We’re more than a giveaway shop; we’re a lifeline for development and social interaction.</p>
-    </section>
+			<section class="mb-8">
+				<h4 class="text-xl title-color mb-4">How You Can Help</h4>
+				<ul class="list-inside list-disc">
+					<li>Financial Contributions: Enable us to scale our impact.</li>
+					<li>Renovation Support: Help us create a space that reflects our values.</li>
+					<li>Item Donations: Enhance our giveaway shop’s offerings.</li>
+					<li>Volunteer: Join our passionate team to create direct impact.</li>
+				</ul>
+			</section>
 
-    <section class="mb-8">
-        <h4 class="text-xl title-color mb-4" data-lang="help-title">How You Can Help</h4>
-        <ul class="list-inside list-disc" data-lang="help-body">
-            <li>Financial Contributions: Enable us to scale our impact.</li>
-            <li>Renovation Support: Help us create a space that reflects our values.</li>
-            <li>Item Donations: Enhance our giveaway shop’s offerings.</li>
-            <li>Volunteer: Join our passionate team to create direct impact.</li>
-        </ul>
-    </section>
-
-    <section class="mb-8">
-        <h4 class="text-xl title-color mb-4" data-lang="contact-title">Get Involved Today</h4>
-        <p data-lang="contact-phone">📞 Phone: +32 495 56 92 86</p>
-        <p data-lang="contact-email">📧 Email: info@deinloop.eu</p>
-        <p data-lang="contact-bank">💳 Bank Account: T.n.v. De Inloop BE29 3631 6167 2364</p>
-    </section>
-
-    <div class="flex justify-center mt-8">
-        <img src="assets/flyer_en.jpg" alt="Flyer for opening" class="max-w-full h-auto">
+			<section class="mb-8">
+				<h4 class="text-xl title-color mb-4">Get Involved Today</h4>
+				<p>📧 Email: info@deinloop.eu</p>
+				<p>💳 Bank Account: T.n.v. De Inloop BE29 3631 6167 2364</p>
+			</section>
+			
+			<!-- Flyer Image at the end -->
+			<div class="flex justify-center mt-8">
+				<img src="assets/flyer_en.jpg" alt="Flyer for opening" class="max-w-full h-auto">
+			</div>
+        </main>
+        <footer class="bg-white dark:bg-black p-4">
+			<p class="text-center">Copyright © De Inloop</p>
+			<div class="flex justify-center">
+				<a href="#" class="mx-2">Privacy Policy</a>
+				<a href="#" class="mx-2">Terms of Service</a>
+			</div>
+        </footer>
     </div>
-	</main>
+    <script src="script.js" defer></script>
+</body>
+</html>
     <footer class="bg-white p-4 text-center transition duration-500 ease-in-out">
         <p>Copyright © De Inloop</p>
         <a href="#" class="underline text-blue-600">Privacy Policy</a>
