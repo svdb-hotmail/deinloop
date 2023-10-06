@@ -6,6 +6,8 @@ if (userPrefersDark) {
     document.getElementById('body').classList.add('dark');
 }
 
+
+
 // Function to change language
 function changeLanguage(lang) {
     const textElements = document.querySelectorAll('[data-lang]');
