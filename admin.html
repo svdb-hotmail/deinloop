@@ -57,10 +57,26 @@
             text-align: center;
         }
 
-        .login-card .lock { font-size: 2.5rem; margin-bottom: 1rem; }
-        .login-card h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: .25rem; }
-        .login-card h1 span { color: var(--orange); }
-        .login-card .sub { color: var(--muted); font-size: .85rem; margin-bottom: 1.5rem; }
+        .login-card .lock {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-card h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: .25rem;
+        }
+
+        .login-card h1 span {
+            color: var(--orange);
+        }
+
+        .login-card .sub {
+            color: var(--muted);
+            font-size: .85rem;
+            margin-bottom: 1.5rem;
+        }
 
         /* Biometric button */
         .btn-biometric {
@@ -74,18 +90,38 @@
             margin-bottom: .75rem;
             gap: .5rem;
         }
-        .btn-biometric:hover { background: #222; }
-        .btn-biometric svg { flex-shrink: 0; }
+
+        .btn-biometric:hover {
+            background: #222;
+        }
+
+        .btn-biometric svg {
+            flex-shrink: 0;
+        }
 
         .divider {
-            display: flex; align-items: center; gap: .75rem;
-            color: var(--muted); font-size: .8rem; margin: .75rem 0;
-        }
-        .divider::before, .divider::after {
-            content: ''; flex: 1; height: 1px; background: var(--border);
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            color: var(--muted);
+            font-size: .8rem;
+            margin: .75rem 0;
         }
 
-        .login-err { color: var(--red); font-size: .85rem; margin-top: .75rem; min-height: 1.2em; }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .login-err {
+            color: var(--red);
+            font-size: .85rem;
+            margin-top: .75rem;
+            min-height: 1.2em;
+        }
 
         /* Enable biometrics prompt (shown after password login) */
         .biometric-prompt {
@@ -97,8 +133,16 @@
             margin-top: 1rem;
             text-align: left;
         }
-        .biometric-prompt p { font-size: .85rem; color: var(--mid); margin-bottom: .75rem; }
-        .biometric-prompt p strong { color: var(--dark); }
+
+        .biometric-prompt p {
+            font-size: .85rem;
+            color: var(--mid);
+            margin-bottom: .75rem;
+        }
+
+        .biometric-prompt p strong {
+            color: var(--dark);
+        }
 
 
         /* ── Admin nav ──────────────────────────────────────────── */
@@ -449,26 +493,59 @@
 
         /* ── Mobile ────────────────────────────────────────── */
         @media (max-width: 600px) {
-            .form-row { grid-template-columns: 1fr; }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
 
-            .hours-row, .hours-header { grid-template-columns: 1fr 36px; }
-            .hours-row .nl-col, .hours-header .nl-lbl { display: none; }
+            .hours-row,
+            .hours-header {
+                grid-template-columns: 1fr 36px;
+            }
+
+            .hours-row .nl-col,
+            .hours-header .nl-lbl {
+                display: none;
+            }
 
             /* Bigger touch targets on mobile */
-            .form-control { font-size: 16px; /* prevents iOS zoom */ padding: .75rem .9rem; }
-            .btn         { padding: .7rem 1.2rem; min-height: 44px; }
-            .btn-sm      { padding: .5rem .85rem; min-height: 40px; }
-            .upload-zone { padding: 2.25rem 1rem; }
-            .upload-zone .uz-icon { font-size: 2.5rem; }
+            .form-control {
+                font-size: 16px;
+                /* prevents iOS zoom */
+                padding: .75rem .9rem;
+            }
+
+            .btn {
+                padding: .7rem 1.2rem;
+                min-height: 44px;
+            }
+
+            .btn-sm {
+                padding: .5rem .85rem;
+                min-height: 40px;
+            }
+
+            .upload-zone {
+                padding: 2.25rem 1rem;
+            }
+
+            .upload-zone .uz-icon {
+                font-size: 2.5rem;
+            }
 
             /* Single-column photo grid on small screens */
-            .photo-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .photo-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
 
             /* Admin body padding */
-            .admin-body { padding: 1rem .75rem 5rem; }
-            .section-card { padding: 1.25rem 1rem; }
-        }
+            .admin-body {
+                padding: 1rem .75rem 5rem;
+            }
 
+            .section-card {
+                padding: 1.25rem 1rem;
+            }
+        }
     </style>
 </head>
 
@@ -484,11 +561,14 @@
             <!-- Biometric login button (hidden until a passkey is registered) -->
             <button class="btn btn-biometric" id="biometricBtn" onclick="biometricLogin()" style="display:none">
                 <!-- Face ID icon -->
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M9 2H4a2 2 0 0 0-2 2v5M9 22H4a2 2 0 0 1-2-2v-5M22 9V4a2 2 0 0 0-2-2h-5M22 15v5a2 2 0 0 1-2 2h-5"/>
-                    <circle cx="12" cy="10" r="1"/><line x1="12" y1="14" x2="12" y2="16"/>
-                    <path d="M8 8s1-1 4-1 4 1 4 1"/>
-                    <path d="M8 12s1 2 4 2 4-2 4-2"/>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M9 2H4a2 2 0 0 0-2 2v5M9 22H4a2 2 0 0 1-2-2v-5M22 9V4a2 2 0 0 0-2-2h-5M22 15v5a2 2 0 0 1-2 2h-5" />
+                    <circle cx="12" cy="10" r="1" />
+                    <line x1="12" y1="14" x2="12" y2="16" />
+                    <path d="M8 8s1-1 4-1 4 1 4 1" />
+                    <path d="M8 12s1 2 4 2 4-2 4-2" />
                 </svg>
                 Sign In with Face ID / Touch ID
             </button>
@@ -504,8 +584,10 @@
 
             <!-- Shown after first password login if WebAuthn is supported -->
             <div class="biometric-prompt" id="biometricPrompt">
-                <p><strong>Enable Face ID / Touch ID?</strong><br>Next time you can log in with just your face or fingerprint.</p>
-                <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="registerBiometric()">Enable Biometrics</button>
+                <p><strong>Enable Face ID / Touch ID?</strong><br>Next time you can log in with just your face or
+                    fingerprint.</p>
+                <button class="btn btn-primary" style="width:100%;justify-content:center"
+                    onclick="registerBiometric()">Enable Biometrics</button>
             </div>
         </div>
     </div>
@@ -573,26 +655,20 @@
 
     <script>
         /* ================================================================
-         *  CONFIG — fill in once, then share this file with the admin.
-         *  This file is in .gitignore and will NOT be pushed to GitHub.
+         *  CONFIG — only two things to set here.
+         *  Everything else (GitHub PAT, repo, branch) lives on Cloudflare.
+         *  This file can now be safely committed to the repo.
          * ================================================================ */
         const CONFIG = {
-            password: 'deinloop2025',   // ← change this
-            owner: 'svdb-hotmail',   // GitHub username
-            repo: 'deinloop',       // repository name
-            branch: 'main',           // branch to commit to
-            token: ''                // ← paste your GitHub PAT here
+            password: 'deinloop2025',                                              // ← change this
+            workerUrl: 'https://deinloop-admin.samuel-vandenbergh.workers.dev'     // Cloudflare Worker
         };
         /* ================================================================ */
 
-
-        /* ── State ────────────────────────────────────────────────── */
+        /* ── State ─────────────────────────────────────────────────── */
         let config = null;
         let configSha = null;
 
-        /* ── Credentials (stored in localStorage) ─────────────────── */
-        // Removed: function getCreds() { return JSON.parse(localStorage.getItem('di_creds') || '{}'); }
-        // Removed: function saveCreds(c) { localStorage.setItem('di_creds', JSON.stringify(c)); }
 
         /* ── Toast ────────────────────────────────────────────────── */
         let _toastTimer;
@@ -606,12 +682,12 @@
 
         /* ── Auth ──────────────────────────────────────────────── */
         const WEBAUTHN_RP = location.hostname || 'localhost';
-        const CRED_KEY   = 'di_passkey_id';
+        const CRED_KEY = 'di_passkey_id';
 
         function supportsWebAuthn() {
             return location.protocol === 'https:' &&
-                   typeof PublicKeyCredential !== 'undefined' &&
-                   typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function';
+                typeof PublicKeyCredential !== 'undefined' &&
+                typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function';
         }
 
         async function passkeyAvailable() {
@@ -623,8 +699,8 @@
         /* Show biometric button if passkey is registered */
         async function initLoginScreen() {
             if (await passkeyAvailable()) {
-                document.getElementById('biometricBtn').style.display   = 'flex';
-                document.getElementById('loginDivider').style.display   = 'flex';
+                document.getElementById('biometricBtn').style.display = 'flex';
+                document.getElementById('loginDivider').style.display = 'flex';
                 // Auto-prompt biometrics after brief delay
                 setTimeout(biometricLogin, 400);
             }
@@ -635,7 +711,7 @@
             if (!raw) return;
             try {
                 const challenge = crypto.getRandomValues(new Uint8Array(32));
-                const credId    = new Uint8Array([...atob(raw)].map(c => c.charCodeAt(0)));
+                const credId = new Uint8Array([...atob(raw)].map(c => c.charCodeAt(0)));
                 const cred = await navigator.credentials.get({
                     publicKey: {
                         challenge,
@@ -661,11 +737,11 @@
             }
             try {
                 const challenge = crypto.getRandomValues(new Uint8Array(32));
-                const userId    = crypto.getRandomValues(new Uint8Array(16));
+                const userId = crypto.getRandomValues(new Uint8Array(16));
                 const cred = await navigator.credentials.create({
                     publicKey: {
                         challenge,
-                        rp:   { name: 'DE INLOOP Admin', id: WEBAUTHN_RP },
+                        rp: { name: 'DE INLOOP Admin', id: WEBAUTHN_RP },
                         user: { id: userId, name: 'admin', displayName: 'Admin' },
                         pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
                         authenticatorSelection: {
@@ -689,7 +765,7 @@
         function doLogin() {
             sessionStorage.setItem('di_auth', '1');
             document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('adminPanel').style.display  = 'block';
+            document.getElementById('adminPanel').style.display = 'block';
             initAdmin();
         }
 
@@ -705,7 +781,7 @@
                 }
             } else {
                 document.getElementById('loginErr').textContent = 'Incorrect password.';
-                document.getElementById('passwordInput').value  = '';
+                document.getElementById('passwordInput').value = '';
             }
         }
         function logout() {
@@ -716,7 +792,7 @@
         /* Check session still valid on load */
         if (sessionStorage.getItem('di_auth') === '1') {
             document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('adminPanel').style.display  = 'block';
+            document.getElementById('adminPanel').style.display = 'block';
         } else {
             initLoginScreen();
             // Dismiss login on Enter key
@@ -725,36 +801,52 @@
             });
         }
 
-        /* ── GitHub API helpers ────────────────────────────────────── */
-        const GH = 'https://api.github.com';
-        function ghHeaders() {
-            // const { token } = getCreds(); // Removed
-            return { 'Authorization': `token ${CONFIG.token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
-        }
-        function repoBase() { // const { owner, repo } = getCreds(); // Removed
-            return `${GH}/repos/${CONFIG.owner}/${CONFIG.repo}/contents`;
+        /* ── Worker API helpers ────────────────────────────────────── */
+        function wHeaders() {
+            return {
+                'Authorization': `Bearer ${CONFIG.password}`,
+                'Content-Type': 'application/json'
+            };
         }
 
-        async function ghGet(path) {
-            const res = await fetch(`${repoBase()}/${path}?ref=${encodeURIComponent(CONFIG.branch)}`, { headers: ghHeaders() });
+        async function wGet(path) {
+            const res = await fetch(`${CONFIG.workerUrl}/${path}`, { headers: wHeaders() });
             if (!res.ok) throw new Error(`GET failed (${res.status})`);
             return res.json();
         }
-        async function ghPut(path, b64, message, sha = null) {
-            const body = { message, content: b64, branch: CONFIG.branch };
+        async function wPut(filePath, b64, message, sha = null) {
+            const body = { path: filePath, content: b64, message };
             if (sha) body.sha = sha;
-            const res = await fetch(`${repoBase()}/${path}`, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+            const res = await fetch(`${CONFIG.workerUrl}/file`, {
+                method: 'PUT',
+                headers: wHeaders(),
+                body: JSON.stringify(body)
+            });
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || `PUT failed (${res.status})`);
             return data;
         }
-        async function ghDelete(path, sha, message) {
-            const res = await fetch(`${repoBase()}/${path}`, {
-                method: 'DELETE', headers: ghHeaders(),
-                body: JSON.stringify({ message, sha, branch: CONFIG.branch })
+        async function wDelete(filePath, sha, message) {
+            const res = await fetch(`${CONFIG.workerUrl}/file`, {
+                method: 'DELETE',
+                headers: wHeaders(),
+                body: JSON.stringify({ path: filePath, sha, message })
             });
+            if (res.status === 204) return;
             if (!res.ok) { const d = await res.json(); throw new Error(d.message || `DELETE failed (${res.status})`); }
         }
+        async function wGetFile(filePath) {
+            const res = await fetch(
+                `${CONFIG.workerUrl}/list?path=${encodeURIComponent(filePath)}`,
+                { headers: wHeaders() }
+            );
+            if (!res.ok) throw new Error(`GET failed (${res.status})`);
+            const data = await res.json();
+            // Returns array (dir listing) or single file object
+            if (Array.isArray(data)) throw new Error('Expected file, got directory');
+            return data;
+        }
+
 
         /* ── Config ───────────────────────────────────────────────── */
         const DEFAULT_CONFIG = {
@@ -768,27 +860,26 @@
         };
 
         async function loadConfig() {
-            toast('Connecting to GitHub…', 'info');
+            toast('Loading…', 'info');
             try {
-                const file = await ghGet('assets/config.json');
+                const file = await wGet('config');
                 configSha = file.sha;
                 config = JSON.parse(atob(file.content.replace(/\s/g, '')));
                 // setConnected(true); // Removed
-                // Close settings panel once connected successfully // Removed
                 // document.getElementById('settingsPanel').classList.remove('open'); // Removed
                 toast('Config loaded ✓', 'success');
             } catch (e) {
                 config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
                 configSha = null;
                 // setConnected(false); // Removed
-                toast('No config.json found — using defaults. Save any section to create it.', 'warn');
+                toast('Could not load config — using defaults.', 'warn');
             }
             renderAll();
         }
 
         async function saveConfig(msg) {
             const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
-            const res = await ghPut('assets/config.json', b64, msg, configSha);
+            const res = await wPut('assets/config.json', b64, msg, configSha);
             configSha = res.content.sha;
         }
 
@@ -817,8 +908,8 @@
                     const b64 = await toBase64(file);
                     const path = `assets/gallery/${file.name}`;
                     let sha = null;
-                    try { const ex = await ghGet(path); sha = ex.sha; } catch { }
-                    await ghPut(path, b64, `Add gallery photo: ${file.name}`, sha);
+                    try { const ex = await wGetFile(path); sha = ex.sha; } catch { }
+                    await wPut(path, b64, `Add gallery photo: ${file.name}`, sha);
                     if (!config.gallery.includes(file.name)) config.gallery.push(file.name);
                     await saveConfig(`Add gallery photo: ${file.name}`);
                     toast(`${file.name} uploaded ✓  — site updates in ~30s`, 'success');
@@ -832,8 +923,8 @@
             if (!confirm(`Delete "${filename}" from the gallery?`)) return;
             toast(`Deleting ${filename}…`, 'info');
             try {
-                const file = await ghGet(`assets/gallery/${filename}`);
-                await ghDelete(`assets/gallery/${filename}`, file.sha, `Remove gallery photo: ${filename}`);
+                const file = await wGetFile(`assets/gallery/${filename}`);
+                await wDelete(`assets/gallery/${filename}`, file.sha, `Remove gallery photo: ${filename}`);
                 config.gallery = config.gallery.filter(f => f !== filename);
                 await saveConfig(`Remove gallery photo: ${filename}`);
                 toast(`${filename} deleted ✓`, 'success');
@@ -902,8 +993,8 @@
                 const b64 = await toBase64(file);
                 const path = `assets/${file.name}`;
                 let sha = null;
-                try { const ex = await ghGet(path); sha = ex.sha; } catch { }
-                await ghPut(path, b64, `Upload calendar: ${file.name}`, sha);
+                try { const ex = await wGetFile(path); sha = ex.sha; } catch { }
+                await wPut(path, b64, `Upload calendar: ${file.name}`, sha);
                 if (!config.calendars.includes(file.name)) config.calendars.push(file.name);
                 await saveConfig(`Add calendar: ${file.name}`);
                 toast(`${file.name} uploaded ✓  — site updates in ~30s`, 'success');
@@ -916,8 +1007,8 @@
             if (!confirm(`Delete calendar "${filename}"?`)) return;
             toast(`Deleting ${filename}…`, 'info');
             try {
-                const file = await ghGet(`assets/${filename}`);
-                await ghDelete(`assets/${filename}`, file.sha, `Remove calendar: ${filename}`);
+                const file = await wGetFile(`assets/${filename}`);
+                await wDelete(`assets/${filename}`, file.sha, `Remove calendar: ${filename}`);
                 config.calendars = config.calendars.filter(f => f !== filename);
                 await saveConfig(`Remove calendar: ${filename}`);
                 toast(`${filename} deleted ✓`, 'success');

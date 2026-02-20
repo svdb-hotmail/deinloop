@@ -23,5 +23,3 @@ build/
 .env.local
 .env.*.local
 
-# Admin page — contains embedded GitHub token, never push to public repo
-admin.html
