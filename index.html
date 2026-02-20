@@ -674,8 +674,10 @@
                     </div><!-- /.carousel-track -->
                 </div><!-- /.carousel-viewport -->
 
-                <button class="carousel-btn prev" id="carouselPrev" aria-label="Previous photo">&#8592;</button>
-                <button class="carousel-btn next" id="carouselNext" aria-label="Next photo">&#8594;</button>
+                <button class="carousel-btn prev" id="carouselPrev" aria-label="Previous photo" data-lang
+                    data-en="Previous photo" data-nl="Vorige foto">&#8592;</button>
+                <button class="carousel-btn next" id="carouselNext" aria-label="Next photo" data-lang
+                    data-en="Next photo" data-nl="Volgende foto">&#8594;</button>
             </div><!-- /.carousel-wrap -->
 
             <div class="carousel-dots" id="carouselDots"></div>
@@ -820,33 +822,76 @@
             calendars: ['cal_feb_2025.jpeg', 'cal_maart_2025.jpeg']
         };
 
+        /* ── Safe filename check ─────────────────────────────────── */
+        function safeName(n) { return typeof n === 'string' && /^[a-zA-Z0-9._-]+$/.test(n); }
+
         function renderHours(rows) {
             const lang = document.getElementById('btn-nl').classList.contains('active') ? 'nl' : 'en';
-            document.getElementById('hoursBody').innerHTML = rows.map(r => {
-                const isClosed = r.hours.toLowerCase() === 'closed';
-                return `<tr>
-                    <td data-lang data-en="${r.days_en}" data-nl="${r.days_nl}">${lang === 'nl' ? r.days_nl : r.days_en}</td>
-                    <td${isClosed ? ' class="closed" data-lang data-en="Closed" data-nl="Gesloten"' : ''}>${isClosed ? (lang === 'nl' ? 'Gesloten' : 'Closed') : r.hours}</td>
-                </tr>`;
-            }).join('');
+            const tbody = document.getElementById('hoursBody');
+            while (tbody.firstChild) tbody.removeChild(tbody.firstChild); // (#1)
+            if (!Array.isArray(rows)) return;
+            rows.forEach(r => {
+                const isClosed = typeof r.hours === 'string' && r.hours.toLowerCase() === 'closed';
+                const tr = document.createElement('tr');
+                const tdDays = document.createElement('td');
+                tdDays.setAttribute('data-lang', '');
+                tdDays.setAttribute('data-en', r.days_en || '');
+                tdDays.setAttribute('data-nl', r.days_nl || '');
+                tdDays.textContent = lang === 'nl' ? (r.days_nl || '') : (r.days_en || '');
+                const tdHours = document.createElement('td');
+                if (isClosed) {
+                    tdHours.classList.add('closed');
+                    tdHours.setAttribute('data-lang', '');
+                    tdHours.setAttribute('data-en', 'Closed');
+                    tdHours.setAttribute('data-nl', 'Gesloten');
+                    tdHours.textContent = lang === 'nl' ? 'Gesloten' : 'Closed';
+                } else {
+                    tdHours.textContent = r.hours || '';
+                }
+                tr.append(tdDays, tdHours);
+                tbody.appendChild(tr);
+            });
         }
 
         function renderGallery(photos) {
             const track = document.getElementById('carouselTrack');
-            if (!photos.length) {
-                track.innerHTML = '<div class="carousel-slide"><div class="placeholder"><span class="ph-icon">📷</span><span class="ph-label">Photos coming soon</span></div></div>';
+            track.innerHTML = '';
+            const lang = document.getElementById('btn-nl').classList.contains('active') ? 'nl' : 'en';
+            if (!Array.isArray(photos) || !photos.length) {
+                // Localised placeholder (#2)
+                const slide = document.createElement('div');
+                slide.className = 'carousel-slide';
+                slide.innerHTML = `<div class="placeholder">
+                    <span class="ph-icon">📷</span>
+                    <span class="ph-label" data-lang data-en="Photos coming soon" data-nl="Foto's volgen binnenkort">${lang === 'nl' ? "Foto's volgen binnenkort" : 'Photos coming soon'}</span>
+                </div>`;
+                track.appendChild(slide);
             } else {
-                track.innerHTML = photos.map(f =>
-                    `<div class="carousel-slide"><img src="assets/gallery/${f}" alt="${f}"></div>`
-                ).join('');
+                photos.forEach(f => {
+                    if (!safeName(f)) return; // (#15)
+                    const slide = document.createElement('div');
+                    slide.className = 'carousel-slide';
+                    const img = document.createElement('img');
+                    img.src = 'assets/gallery/' + encodeURIComponent(f);
+                    img.alt = f;
+                    slide.appendChild(img);
+                    track.appendChild(slide);
+                });
             }
             initCarousel();
         }
 
         function renderCalendars(cals) {
-            document.getElementById('calendarGrid').innerHTML = cals.map(f =>
-                `<img src="assets/${f}" alt="${f}">`
-            ).join('');
+            const grid = document.getElementById('calendarGrid');
+            grid.innerHTML = '';
+            if (!Array.isArray(cals)) return;
+            cals.forEach(f => {
+                if (!safeName(f)) return; // (#3)
+                const img = document.createElement('img');
+                img.src = 'assets/' + encodeURIComponent(f);
+                img.alt = f;
+                grid.appendChild(img);
+            });
         }
 
         async function loadConfig() {
@@ -854,9 +899,10 @@
                 const res = await fetch('assets/config.json?t=' + Date.now());
                 if (!res.ok) throw new Error();
                 const cfg = await res.json();
-                renderHours(cfg.openingHours);
-                renderGallery(cfg.gallery);
-                renderCalendars(cfg.calendars);
+                // Per-section fallbacks to guard against partial config (#11)
+                renderHours(Array.isArray(cfg.openingHours) ? cfg.openingHours : DEFAULT_CONFIG.openingHours);
+                renderGallery(Array.isArray(cfg.gallery) ? cfg.gallery : DEFAULT_CONFIG.gallery);
+                renderCalendars(Array.isArray(cfg.calendars) ? cfg.calendars : DEFAULT_CONFIG.calendars);
             } catch {
                 renderHours(DEFAULT_CONFIG.openingHours);
                 renderGallery(DEFAULT_CONFIG.gallery);
@@ -876,7 +922,10 @@
             slides.forEach((_, i) => {
                 const d = document.createElement('button');
                 d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-                d.setAttribute('aria-label', 'Go to photo ' + (i + 1));
+                // Localised aria-label (#20)
+                const lang = document.getElementById('btn-nl').classList.contains('active') ? 'nl' : 'en';
+                const prefix = lang === 'nl' ? 'Ga naar foto ' : 'Go to photo ';
+                d.setAttribute('aria-label', prefix + (i + 1));
                 d.addEventListener('click', () => goTo(i));
                 dotsEl.appendChild(d);
             });

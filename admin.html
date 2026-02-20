@@ -603,54 +603,56 @@
 
         <!-- Collapsible GitHub Settings removed: credentials are baked into the CONFIG block -->
 
+        <div id="toast" class="toast"></div><!-- toast container (#17) -->
+        <div class="admin-body"><!-- admin-body wrapper (#12) -->
 
-        <!-- Gallery -->
-        <div class="section-card">
-            <h2>📸 Gallery Photos</h2>
-            <div class="upload-zone" onclick="document.getElementById('galleryInput').click()">
-                <span class="uz-icon">🖼️</span>
-                <span class="uz-label">Click to upload photos</span>
-                <small>JPG, PNG, WebP — multiple files allowed</small>
+            <!-- Gallery -->
+            <div class="section-card">
+                <h2>📸 Gallery Photos</h2>
+                <div class="upload-zone" onclick="document.getElementById('galleryInput').click()">
+                    <span class="uz-icon">🖼️</span>
+                    <span class="uz-label">Click to upload photos</span>
+                    <small>JPG, PNG, WebP — multiple files allowed</small>
+                </div>
+                <input type="file" id="galleryInput" accept="image/*" multiple style="display:none"
+                    onchange="uploadPhotos(this.files)">
+                <div class="photo-grid" id="galleryGrid">
+                    <p class="empty-state">Load config first ↑</p>
+                </div>
             </div>
-            <input type="file" id="galleryInput" accept="image/*" multiple style="display:none"
-                onchange="uploadPhotos(this.files)">
-            <div class="photo-grid" id="galleryGrid">
-                <p class="empty-state">Load config first ↑</p>
-            </div>
-        </div>
 
-        <!-- Opening Hours -->
-        <div class="section-card">
-            <h2>🕐 Opening Hours</h2>
-            <div class="hours-header">
-                <span>Day (English)</span>
-                <span class="nl-lbl">Day (Dutch)</span>
-                <span>Hours / Closed</span>
-                <span></span>
+            <!-- Opening Hours -->
+            <div class="section-card">
+                <h2>🕐 Opening Hours</h2>
+                <div class="hours-header">
+                    <span>Day (English)</span>
+                    <span class="nl-lbl">Day (Dutch)</span>
+                    <span>Hours / Closed</span>
+                    <span></span>
+                </div>
+                <div id="hoursRows"></div>
+                <div class="hours-actions">
+                    <button class="btn btn-secondary" onclick="addHourRow()">+ Add Row</button>
+                    <button class="btn btn-primary" onclick="saveHours()">💾 Save Hours</button>
+                </div>
             </div>
-            <div id="hoursRows"></div>
-            <div class="hours-actions">
-                <button class="btn btn-secondary" onclick="addHourRow()">+ Add Row</button>
-                <button class="btn btn-primary" onclick="saveHours()">💾 Save Hours</button>
-            </div>
-        </div>
 
-        <!-- Calendars -->
-        <div class="section-card">
-            <h2>📅 Calendars</h2>
-            <div class="upload-zone" onclick="document.getElementById('calInput').click()">
-                <span class="uz-icon">📆</span>
-                <span class="uz-label">Upload calendar image</span>
-                <small>JPG or PNG — saved to assets/</small>
+            <!-- Calendars -->
+            <div class="section-card">
+                <h2>📅 Calendars</h2>
+                <div class="upload-zone" onclick="document.getElementById('calInput').click()">
+                    <span class="uz-icon">📆</span>
+                    <span class="uz-label">Upload calendar image</span>
+                    <small>JPG or PNG — saved to assets/</small>
+                </div>
+                <input type="file" id="calInput" accept="image/*" style="display:none"
+                    onchange="uploadCalendar(this.files[0])">
+                <div class="photo-grid" id="calGrid">
+                    <p class="empty-state">Load config first ↑</p>
+                </div>
             </div>
-            <input type="file" id="calInput" accept="image/*" style="display:none"
-                onchange="uploadCalendar(this.files[0])">
-            <div class="photo-grid" id="calGrid">
-                <p class="empty-state">Load config first ↑</p>
-            </div>
-        </div>
 
-    </div><!-- /.admin-body -->
+        </div><!-- /.admin-body -->
     </div><!-- /#adminPanel -->
 
     <script>
@@ -674,6 +676,7 @@
         let _toastTimer;
         function toast(msg, type = 'info') {
             const el = document.getElementById('toast');
+            if (!el) return; // guard: element may not exist yet
             el.textContent = msg;
             el.className = 'toast show ' + type;
             clearTimeout(_toastTimer);
@@ -878,39 +881,69 @@
         }
 
         async function saveConfig(msg) {
-            const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
+            // TextEncoder → base64 (replaces deprecated unescape trick, #8)
+            const json = JSON.stringify(config, null, 2);
+            const bytes = new TextEncoder().encode(json);
+            const b64 = btoa(String.fromCharCode(...bytes));
             const res = await wPut('assets/config.json', b64, msg, configSha);
             configSha = res.content.sha;
         }
 
-        /* ── Gallery ──────────────────────────────────────────────── */
+        /* Validate filename: allow only safe FS-safe chars (#15, #18) */
+        function isSafe(name) {
+            return typeof name === 'string' && /^[a-zA-Z0-9._-]+$/.test(name);
+        }
+        function normalizeFilename(name) {
+            let base = String(name || '').split(/[\\/]/).pop();
+            base = base.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 100);
+            return base || 'file';
+        }
+
         function renderGallery() {
             const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
             if (!config.gallery.length) {
                 grid.innerHTML = '<p class="empty-state">No photos yet — upload some above!</p>';
                 return;
             }
-            grid.innerHTML = config.gallery.map(f => `
-            <div class="photo-item">
-                <img src="https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/assets/gallery/${encodeURIComponent(f)}"
-                     alt="${esc(f)}" onerror="this.style.background='#eee'">
-                <div class="photo-meta">
-                    <span class="photo-name" title="${esc(f)}">${esc(f)}</span>
-                    <button class="btn btn-danger btn-sm" onclick="deletePhoto('${esc(f)}')">🗑</button>
-                </div>
-            </div>`).join('');
+            config.gallery.forEach(f => {
+                if (!isSafe(f)) return;
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+
+                const img = document.createElement('img');
+                img.src = `assets/gallery/${encodeURIComponent(f)}`;
+                img.alt = f;
+                img.onerror = () => { img.style.background = '#eee'; };
+
+                const meta = document.createElement('div');
+                meta.className = 'photo-meta';
+                const nm = document.createElement('span');
+                nm.className = 'photo-name';
+                nm.title = f;
+                nm.textContent = f;
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-danger btn-sm';
+                btn.textContent = '🗑';
+                btn.addEventListener('click', () => deletePhoto(f)); // (#6)
+
+                meta.append(nm, btn);
+                item.append(img, meta);
+                grid.appendChild(item);
+            });
         }
 
         async function uploadPhotos(files) {
             for (const file of Array.from(files)) {
+                const safeName = normalizeFilename(file.name); // (#18)
                 toast(`Uploading ${file.name}…`, 'info');
                 try {
                     const b64 = await toBase64(file);
-                    const path = `assets/gallery/${file.name}`;
+                    const path = `assets/gallery/${safeName}`;
                     let sha = null;
                     try { const ex = await wGetFile(path); sha = ex.sha; } catch { }
                     await wPut(path, b64, `Add gallery photo: ${file.name}`, sha);
-                    if (!config.gallery.includes(file.name)) config.gallery.push(file.name);
+                    if (!config.gallery.includes(safeName)) config.gallery.push(safeName);
                     await saveConfig(`Add gallery photo: ${file.name}`);
                     toast(`${file.name} uploaded ✓  — site updates in ~30s`, 'success');
                 } catch (e) { toast(`Error: ${e.message}`, 'error'); }
@@ -971,19 +1004,31 @@
         /* ── Calendars ────────────────────────────────────────────── */
         function renderCalendars() {
             const grid = document.getElementById('calGrid');
+            grid.innerHTML = '';
             if (!config.calendars.length) {
                 grid.innerHTML = '<p class="empty-state">No calendars — upload one above!</p>';
                 return;
             }
-            grid.innerHTML = config.calendars.map(f => `
-            <div class="photo-item">
-                <img src="https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/assets/${encodeURIComponent(f)}"
-                     alt="${esc(f)}" onerror="this.style.background='#eee'">
-                <div class="photo-meta">
-                    <span class="photo-name" title="${esc(f)}">${esc(f)}</span>
-                    <button class="btn btn-danger btn-sm" onclick="deleteCal('${esc(f)}')">🗑</button>
-                </div>
-            </div>`).join('');
+            config.calendars.forEach(f => {
+                if (!isSafe(f)) return; // (#26)
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                const img = document.createElement('img');
+                img.src = `assets/${encodeURIComponent(f)}`;
+                img.alt = f;
+                img.onerror = () => { img.style.background = '#eee'; };
+                const meta = document.createElement('div');
+                meta.className = 'photo-meta';
+                const nm = document.createElement('span');
+                nm.className = 'photo-name'; nm.title = f; nm.textContent = f;
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-danger btn-sm';
+                btn.textContent = '🗑';
+                btn.addEventListener('click', () => deleteCal(f)); // (#9)
+                meta.append(nm, btn);
+                item.append(img, meta);
+                grid.appendChild(item);
+            });
         }
 
         async function uploadCalendar(file) {
@@ -1043,22 +1088,8 @@
 
         /* ── Init (credentials come from CONFIG block, not localStorage) ── */
         function initAdmin() {
-            // const c = getCreds(); // Removed
-            // if (c.owner) { // Removed
-            //     document.getElementById('ghOwner').value = c.owner; // Removed
-            //     document.getElementById('ghRepo').value = c.repo; // Removed
-            //     document.getElementById('ghBranch').value = c.branch || 'main'; // Removed
-            //     document.getElementById('ghToken').value = c.token; // Removed
-            //     loadConfig(); // Removed
-            // } else { // Removed
-            //     // No credentials yet — open settings automatically // Removed
-            //     document.getElementById('settingsPanel').classList.add('open'); // Removed
-            // } // Removed
-            if (!CONFIG.token) {
-                toast('No token set in CONFIG block. Open admin.html in a text editor and fill in the token field.', 'error');
-            } else {
-                loadConfig();
-            }
+            // Credentials live in Cloudflare Worker Secrets — just load config (#23)
+            loadConfig();
         }
 
         // Restore session
