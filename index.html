@@ -669,47 +669,7 @@
                 <div class="carousel-viewport" id="carouselViewport">
                     <div class="carousel-track" id="carouselTrack">
 
-                        <!-- Slide 1 — replace src with your real photo path -->
-                        <div class="carousel-slide">
-                            <div class="placeholder">
-                                <span class="ph-icon">📷</span>
-                                <span class="ph-label">assets/gallery/photo1.jpg</span>
-                            </div>
-                        </div>
-
-                        <!-- Slide 2 -->
-                        <div class="carousel-slide">
-                            <div class="placeholder">
-                                <span class="ph-icon">📷</span>
-                                <span class="ph-label">assets/gallery/photo2.jpg</span>
-                            </div>
-                        </div>
-
-                        <!-- Slide 3 -->
-                        <div class="carousel-slide">
-                            <div class="placeholder">
-                                <span class="ph-icon">📷</span>
-                                <span class="ph-label">assets/gallery/photo3.jpg</span>
-                            </div>
-                        </div>
-
-                        <!-- Slide 4 -->
-                        <div class="carousel-slide">
-                            <div class="placeholder">
-                                <span class="ph-icon">📷</span>
-                                <span class="ph-label">assets/gallery/photo4.jpg</span>
-                            </div>
-                        </div>
-
-                        <!-- Slide 5 -->
-                        <div class="carousel-slide">
-                            <div class="placeholder">
-                                <span class="ph-icon">📷</span>
-                                <span class="ph-label">assets/gallery/photo5.jpg</span>
-                            </div>
-                        </div>
-
-                        <!-- Add more slides here -->
+                        <!-- slides injected by JS from assets/config.json -->
 
                     </div><!-- /.carousel-track -->
                 </div><!-- /.carousel-viewport -->
@@ -812,22 +772,8 @@
                         <th data-lang data-en="Hours" data-nl="Uren">Hours</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td data-lang data-en="Monday &amp; Wednesday" data-nl="Maandag &amp; Woensdag">Monday &amp;
-                            Wednesday</td>
-                        <td>13:00 – 18:00</td>
-                    </tr>
-                    <tr>
-                        <td data-lang data-en="Friday" data-nl="Vrijdag">Friday</td>
-                        <td>14:00 – 19:00</td>
-                    </tr>
-                    <tr>
-                        <td data-lang data-en="Tuesday, Thursday, Saturday &amp; Sunday"
-                            data-nl="Dinsdag, Donderdag, Zaterdag &amp; Zondag">Tuesday, Thursday, Saturday &amp; Sunday
-                        </td>
-                        <td class="closed" data-lang data-en="Closed" data-nl="Gesloten">Closed</td>
-                    </tr>
+                <tbody id="hoursBody">
+                    <!-- rows injected by JS from assets/config.json -->
                 </tbody>
             </table>
         </div>
@@ -835,9 +781,8 @@
         <!-- ── Calendar images ──────────────────────────────────────── -->
         <div class="calendar-section">
             <h2><span>📅</span> <span data-lang data-en="Agenda" data-nl="Agenda">Agenda</span></h2>
-            <div class="calendar-grid">
-                <img src="assets/cal_feb_2025.jpeg" alt="Calendar February 2025">
-                <img src="assets/cal_maart_2025.jpeg" alt="Calendar March 2025">
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- images injected by JS from assets/config.json -->
             </div>
         </div>
 
@@ -864,15 +809,70 @@
             document.getElementById('btn-nl').classList.toggle('active', lang === 'nl');
         }
 
-        /* ── Photo carousel ──────────────────────────────────────────── */
-        (function () {
+        /* ── Config-driven rendering ──────────────────────────────────── */
+        const DEFAULT_CONFIG = {
+            openingHours: [
+                { days_en: 'Monday & Wednesday', days_nl: 'Maandag & Woensdag', hours: '13:00 – 18:00' },
+                { days_en: 'Friday', days_nl: 'Vrijdag', hours: '14:00 – 19:00' },
+                { days_en: 'Tuesday, Thursday, Saturday & Sunday', days_nl: 'Dinsdag, Donderdag, Zaterdag & Zondag', hours: 'Closed' }
+            ],
+            gallery: [],
+            calendars: ['cal_feb_2025.jpeg', 'cal_maart_2025.jpeg']
+        };
+
+        function renderHours(rows) {
+            const lang = document.getElementById('btn-nl').classList.contains('active') ? 'nl' : 'en';
+            document.getElementById('hoursBody').innerHTML = rows.map(r => {
+                const isClosed = r.hours.toLowerCase() === 'closed';
+                return `<tr>
+                    <td data-lang data-en="${r.days_en}" data-nl="${r.days_nl}">${lang === 'nl' ? r.days_nl : r.days_en}</td>
+                    <td${isClosed ? ' class="closed" data-lang data-en="Closed" data-nl="Gesloten"' : ''}>${isClosed ? (lang === 'nl' ? 'Gesloten' : 'Closed') : r.hours}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderGallery(photos) {
             const track = document.getElementById('carouselTrack');
-            const slides = track.querySelectorAll('.carousel-slide');
+            if (!photos.length) {
+                track.innerHTML = '<div class="carousel-slide"><div class="placeholder"><span class="ph-icon">📷</span><span class="ph-label">Photos coming soon</span></div></div>';
+            } else {
+                track.innerHTML = photos.map(f =>
+                    `<div class="carousel-slide"><img src="assets/gallery/${f}" alt="${f}"></div>`
+                ).join('');
+            }
+            initCarousel();
+        }
+
+        function renderCalendars(cals) {
+            document.getElementById('calendarGrid').innerHTML = cals.map(f =>
+                `<img src="assets/${f}" alt="${f}">`
+            ).join('');
+        }
+
+        async function loadConfig() {
+            try {
+                const res = await fetch('assets/config.json?t=' + Date.now());
+                if (!res.ok) throw new Error();
+                const cfg = await res.json();
+                renderHours(cfg.openingHours);
+                renderGallery(cfg.gallery);
+                renderCalendars(cfg.calendars);
+            } catch {
+                renderHours(DEFAULT_CONFIG.openingHours);
+                renderGallery(DEFAULT_CONFIG.gallery);
+                renderCalendars(DEFAULT_CONFIG.calendars);
+            }
+        }
+
+        /* ── Carousel (called after gallery is rendered) ─────────────── */
+        function initCarousel() {
+            const track = document.getElementById('carouselTrack');
             const dotsEl = document.getElementById('carouselDots');
+            const slides = track.querySelectorAll('.carousel-slide');
             const total = slides.length;
             let cur = 0;
+            dotsEl.innerHTML = '';
 
-            /* Build dots */
             slides.forEach((_, i) => {
                 const d = document.createElement('button');
                 d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
@@ -884,28 +884,23 @@
             function goTo(idx) {
                 cur = (idx + total) % total;
                 track.style.transform = 'translateX(-' + cur * 100 + '%)';
-                dotsEl.querySelectorAll('.carousel-dot').forEach((d, i) =>
-                    d.classList.toggle('active', i === cur));
+                dotsEl.querySelectorAll('.carousel-dot')
+                    .forEach((d, i) => d.classList.toggle('active', i === cur));
             }
 
-            document.getElementById('carouselPrev').addEventListener('click', () => goTo(cur - 1));
-            document.getElementById('carouselNext').addEventListener('click', () => goTo(cur + 1));
-
-            /* Keyboard arrows */
-            document.addEventListener('keydown', e => {
+            document.getElementById('carouselPrev').onclick = () => goTo(cur - 1);
+            document.getElementById('carouselNext').onclick = () => goTo(cur + 1);
+            document.onkeydown = e => {
                 if (e.key === 'ArrowLeft') goTo(cur - 1);
                 if (e.key === 'ArrowRight') goTo(cur + 1);
-            });
-
-            /* Touch swipe */
-            let touchStartX = 0;
+            };
             const vp = document.getElementById('carouselViewport');
-            vp.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
-            vp.addEventListener('touchend', e => {
-                const diff = touchStartX - e.changedTouches[0].clientX;
-                if (Math.abs(diff) > 40) goTo(diff > 0 ? cur + 1 : cur - 1);
-            }, { passive: true });
-        })();
+            let tx = 0;
+            vp.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+            vp.addEventListener('touchend', e => { const d = tx - e.changedTouches[0].clientX; if (Math.abs(d) > 40) goTo(d > 0 ? cur + 1 : cur - 1); }, { passive: true });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadConfig);
     </script>
 </body>
 

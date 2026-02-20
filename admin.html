@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DE INLOOP — Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FFA500;
+            --orange-dark: #e08c00;
+            --dark: #1a1a1a;
+            --mid: #444;
+            --muted: #888;
+            --border: #e8e8e8;
+            --bg: #f5f5f0;
+            --white: #ffffff;
+            --red: #e53e3e;
+            --green: #38a169;
+            --radius: 12px;
+            --shadow: 0 2px 16px rgba(0, 0, 0, .07);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--dark);
+            font-size: 15px;
+        }
+
+        /* ── Login ──────────────────────────────────────────────── */
+        #loginScreen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, .12);
+            padding: 2.5rem 2rem;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .login-card .lock {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-card h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: .25rem;
+        }
+
+        .login-card h1 span {
+            color: var(--orange);
+        }
+
+        .login-card .sub {
+            color: var(--muted);
+            font-size: .85rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-err {
+            color: var(--red);
+            font-size: .85rem;
+            margin-top: .75rem;
+            min-height: 1.2em;
+        }
+
+        /* ── Admin nav ──────────────────────────────────────────── */
+        .admin-nav {
+            background: var(--white);
+            border-bottom: 3px solid var(--orange);
+            padding: .8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+        }
+
+        .admin-nav .brand {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .admin-nav .brand span {
+            color: var(--orange);
+        }
+
+        .admin-nav .tag {
+            background: var(--orange);
+            color: #fff;
+            font-size: .7rem;
+            font-weight: 700;
+            padding: .15rem .45rem;
+            border-radius: 4px;
+            letter-spacing: .05em;
+            vertical-align: middle;
+            margin-left: .4rem;
+        }
+
+        /* ── Body layout ────────────────────────────────────────── */
+        .admin-body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 1.75rem 1.25rem 4rem;
+        }
+
+        /* ── Cards ──────────────────────────────────────────────── */
+        .section-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--orange);
+        }
+
+        .section-card h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        /* ── Forms ──────────────────────────────────────────────── */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--mid);
+            margin-bottom: .35rem;
+        }
+
+        .form-group label a {
+            color: var(--orange);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: .55rem .8rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: .9rem;
+            color: var(--dark);
+            transition: border-color .2s;
+            background: var(--white);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: .75rem;
+        }
+
+        /* ── Buttons ────────────────────────────────────────────── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .55rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: .875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s, transform .1s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--orange-dark);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--mid);
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #fff0f0;
+            color: var(--red);
+        }
+
+        .btn-danger:hover {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .btn-sm {
+            padding: .3rem .7rem;
+            font-size: .8rem;
+            border-radius: 6px;
+        }
+
+        .btn-logout {
+            background: #f5f5f0;
+            color: var(--mid);
+            border: 1.5px solid var(--border);
+        }
+
+        /* ── Upload zone ────────────────────────────────────────── */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            padding: 1.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            margin-bottom: 1.25rem;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--orange);
+            background: #fffbf0;
+        }
+
+        .upload-zone .uz-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: .5rem;
+        }
+
+        .upload-zone .uz-label {
+            font-weight: 600;
+            color: var(--mid);
+            display: block;
+        }
+
+        .upload-zone small {
+            color: var(--muted);
+            font-size: .78rem;
+        }
+
+        /* ── Photo / Cal grid ───────────────────────────────────── */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+
+        .photo-item {
+            background: var(--bg);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1.5px solid var(--border);
+        }
+
+        .photo-item img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            display: block;
+            background: #eee;
+        }
+
+        .photo-meta {
+            padding: .5rem .65rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+        }
+
+        .photo-name {
+            font-size: .75rem;
+            color: var(--muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .empty-state {
+            color: var(--muted);
+            font-size: .9rem;
+            padding: .5rem 0;
+        }
+
+        /* ── Hours editor ───────────────────────────────────────── */
+        .hours-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 36px;
+            gap: .5rem;
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            padding-bottom: .5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: .5rem;
+        }
+
+        .hours-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 36px;
+            gap: .5rem;
+            align-items: center;
+            margin-bottom: .5rem;
+        }
+
+        .hours-actions {
+            display: flex;
+            gap: .75rem;
+            margin-top: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* ── Toast ──────────────────────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--dark);
+            color: #fff;
+            padding: .7rem 1.1rem;
+            border-radius: 8px;
+            font-size: .85rem;
+            font-weight: 500;
+            transform: translateY(6px);
+            opacity: 0;
+            transition: all .3s;
+            z-index: 999;
+            max-width: 320px;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--green);
+        }
+
+        .toast.error {
+            background: var(--red);
+        }
+
+        .toast.warn {
+            background: #b7791f;
+        }
+
+        /* ── Responsive ─────────────────────────────────────────── */
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .hours-row,
+            .hours-header {
+                grid-template-columns: 1fr 36px;
+            }
+
+            .hours-row .nl-col,
+            .hours-header .nl-lbl {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── Login ──────────────────────────────────────────────────── -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <div class="lock">🔐</div>
+            <h1>DE <span>INLOOP</span> Admin</h1>
+            <p class="sub">Website management panel</p>
+            <div class="form-group">
+                <input class="form-control" type="password" id="passwordInput" placeholder="Password"
+                    autocomplete="current-password">
+            </div>
+            <button class="btn btn-primary" style="width:100%" onclick="login()">Sign In</button>
+            <p class="login-err" id="loginErr"></p>
+        </div>
+    </div>
+
+    <!-- ── Admin Panel ─────────────────────────────────────────────── -->
+    <div id="adminPanel" style="display:none">
+        <nav class="admin-nav">
+            <span class="brand">DE <span>INLOOP</span><span class="tag">ADMIN</span></span>
+            <button class="btn btn-logout btn-sm" onclick="logout()">← Logout</button>
+        </nav>
+
+        <div class="admin-body">
+            <div class="toast" id="toast"></div>
+
+            <!-- GitHub Settings -->
+            <div class="section-card">
+                <h2>⚙️ GitHub Connection</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Repository Owner</label>
+                        <input id="ghOwner" class="form-control" type="text" placeholder="svdb-hotmail">
+                    </div>
+                    <div class="form-group">
+                        <label>Repository Name</label>
+                        <input id="ghRepo" class="form-control" type="text" placeholder="deinloop">
+                    </div>
+                    <div class="form-group">
+                        <label>Branch</label>
+                        <input id="ghBranch" class="form-control" type="text" placeholder="main">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Personal Access Token
+                        <a href="https://github.com/settings/tokens/new?scopes=repo&description=deinloop-admin"
+                            target="_blank">(create one ↗)</a>
+                    </label>
+                    <input id="ghToken" class="form-control" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                </div>
+                <button class="btn btn-primary" onclick="saveGhSettings()">Save &amp; Load Config</button>
+            </div>
+
+            <!-- Gallery -->
+            <div class="section-card">
+                <h2>📸 Gallery Photos</h2>
+                <div class="upload-zone" onclick="document.getElementById('galleryInput').click()">
+                    <span class="uz-icon">🖼️</span>
+                    <span class="uz-label">Click to upload photos</span>
+                    <small>JPG, PNG, WebP — multiple files allowed</small>
+                </div>
+                <input type="file" id="galleryInput" accept="image/*" multiple style="display:none"
+                    onchange="uploadPhotos(this.files)">
+                <div class="photo-grid" id="galleryGrid">
+                    <p class="empty-state">Load config first ↑</p>
+                </div>
+            </div>
+
+            <!-- Opening Hours -->
+            <div class="section-card">
+                <h2>🕐 Opening Hours</h2>
+                <div class="hours-header">
+                    <span>Day (English)</span>
+                    <span class="nl-lbl">Day (Dutch)</span>
+                    <span>Hours / Closed</span>
+                    <span></span>
+                </div>
+                <div id="hoursRows"></div>
+                <div class="hours-actions">
+                    <button class="btn btn-secondary" onclick="addHourRow()">+ Add Row</button>
+                    <button class="btn btn-primary" onclick="saveHours()">💾 Save Hours</button>
+                </div>
+            </div>
+
+            <!-- Calendars -->
+            <div class="section-card">
+                <h2>📅 Calendars</h2>
+                <div class="upload-zone" onclick="document.getElementById('calInput').click()">
+                    <span class="uz-icon">📆</span>
+                    <span class="uz-label">Upload calendar image</span>
+                    <small>JPG or PNG — saved to assets/</small>
+                </div>
+                <input type="file" id="calInput" accept="image/*" style="display:none"
+                    onchange="uploadCalendar(this.files[0])">
+                <div class="photo-grid" id="calGrid">
+                    <p class="empty-state">Load config first ↑</p>
+                </div>
+            </div>
+
+        </div><!-- /.admin-body -->
+    </div><!-- /#adminPanel -->
+
+    <script>
+        /* ─────────────────────────────────────────────────────────────
+           CHANGE THE PASSWORD BELOW.
+           To find your new password hash: open browser console → type:
+             btoa('yourpassword')
+           Then replace the ADMIN_PASSWORD value with that string,
+           and set USE_PLAIN = true (plain text comparison).
+           Or just change the string directly — it's plain text below.
+        ──────────────────────────────────────────────────────────── */
+        const ADMIN_PASSWORD = 'deinloop2025';
+
+        /* ── State ────────────────────────────────────────────────── */
+        let config = null;
+        let configSha = null;
+
+        /* ── Credentials (stored in localStorage) ─────────────────── */
+        function getCreds() { return JSON.parse(localStorage.getItem('di_creds') || '{}'); }
+        function saveCreds(c) { localStorage.setItem('di_creds', JSON.stringify(c)); }
+
+        /* ── Toast ────────────────────────────────────────────────── */
+        let _toastTimer;
+        function toast(msg, type = 'info') {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.className = 'toast show ' + type;
+            clearTimeout(_toastTimer);
+            _toastTimer = setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        /* ── Auth ─────────────────────────────────────────────────── */
+        function login() {
+            const pw = document.getElementById('passwordInput').value;
+            if (pw === ADMIN_PASSWORD) {
+                sessionStorage.setItem('di_auth', '1');
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                initAdmin();
+            } else {
+                document.getElementById('loginErr').textContent = 'Incorrect password.';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+        function logout() {
+            sessionStorage.removeItem('di_auth');
+            location.reload();
+        }
+
+        /* ── GitHub API helpers ────────────────────────────────────── */
+        const GH = 'https://api.github.com';
+        function ghHeaders() {
+            const { token } = getCreds();
+            return { 'Authorization': `token ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
+        }
+        function repoBase() { const { owner, repo } = getCreds(); return `${GH}/repos/${owner}/${repo}/contents`; }
+
+        async function ghGet(path) {
+            const { branch } = getCreds();
+            const res = await fetch(`${repoBase()}/${path}?ref=${encodeURIComponent(branch)}`, { headers: ghHeaders() });
+            if (!res.ok) throw new Error(`GET failed (${res.status})`);
+            return res.json();
+        }
+        async function ghPut(path, b64, message, sha = null) {
+            const { branch } = getCreds();
+            const body = { message, content: b64, branch };
+            if (sha) body.sha = sha;
+            const res = await fetch(`${repoBase()}/${path}`, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || `PUT failed (${res.status})`);
+            return data;
+        }
+        async function ghDelete(path, sha, message) {
+            const { branch } = getCreds();
+            const res = await fetch(`${repoBase()}/${path}`, {
+                method: 'DELETE', headers: ghHeaders(),
+                body: JSON.stringify({ message, sha, branch })
+            });
+            if (!res.ok) { const d = await res.json(); throw new Error(d.message || `DELETE failed (${res.status})`); }
+        }
+
+        /* ── Config ───────────────────────────────────────────────── */
+        const DEFAULT_CONFIG = {
+            openingHours: [
+                { days_en: 'Monday & Wednesday', days_nl: 'Maandag & Woensdag', hours: '13:00 \u2013 18:00' },
+                { days_en: 'Friday', days_nl: 'Vrijdag', hours: '14:00 \u2013 19:00' },
+                { days_en: 'Tuesday, Thursday, Saturday & Sunday', days_nl: 'Dinsdag, Donderdag, Zaterdag & Zondag', hours: 'Closed' }
+            ],
+            gallery: [],
+            calendars: ['cal_feb_2025.jpeg', 'cal_maart_2025.jpeg']
+        };
+
+        async function loadConfig() {
+            toast('Connecting to GitHub…', 'info');
+            try {
+                const file = await ghGet('assets/config.json');
+                configSha = file.sha;
+                config = JSON.parse(atob(file.content.replace(/\s/g, '')));
+                toast('Config loaded ✓', 'success');
+            } catch (e) {
+                config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+                configSha = null;
+                toast('No config.json found — using defaults. Save any section to create it.', 'warn');
+            }
+            renderAll();
+        }
+
+        async function saveConfig(msg) {
+            const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(config, null, 2))));
+            const res = await ghPut('assets/config.json', b64, msg, configSha);
+            configSha = res.content.sha;
+        }
+
+        /* ── Gallery ──────────────────────────────────────────────── */
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            if (!config.gallery.length) {
+                grid.innerHTML = '<p class="empty-state">No photos yet — upload some above!</p>';
+                return;
+            }
+            const { owner, repo, branch } = getCreds();
+            grid.innerHTML = config.gallery.map(f => `
+            <div class="photo-item">
+                <img src="https://raw.githubusercontent.com/${owner}/${repo}/${branch}/assets/gallery/${encodeURIComponent(f)}"
+                     alt="${esc(f)}" onerror="this.style.background='#eee'">
+                <div class="photo-meta">
+                    <span class="photo-name" title="${esc(f)}">${esc(f)}</span>
+                    <button class="btn btn-danger btn-sm" onclick="deletePhoto('${esc(f)}')">🗑</button>
+                </div>
+            </div>`).join('');
+        }
+
+        async function uploadPhotos(files) {
+            for (const file of Array.from(files)) {
+                toast(`Uploading ${file.name}…`, 'info');
+                try {
+                    const b64 = await toBase64(file);
+                    const path = `assets/gallery/${file.name}`;
+                    let sha = null;
+                    try { const ex = await ghGet(path); sha = ex.sha; } catch { }
+                    await ghPut(path, b64, `Add gallery photo: ${file.name}`, sha);
+                    if (!config.gallery.includes(file.name)) config.gallery.push(file.name);
+                    await saveConfig(`Add gallery photo: ${file.name}`);
+                    toast(`${file.name} uploaded ✓  — site updates in ~30s`, 'success');
+                } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+            }
+            document.getElementById('galleryInput').value = '';
+            renderGallery();
+        }
+
+        async function deletePhoto(filename) {
+            if (!confirm(`Delete "${filename}" from the gallery?`)) return;
+            toast(`Deleting ${filename}…`, 'info');
+            try {
+                const file = await ghGet(`assets/gallery/${filename}`);
+                await ghDelete(`assets/gallery/${filename}`, file.sha, `Remove gallery photo: ${filename}`);
+                config.gallery = config.gallery.filter(f => f !== filename);
+                await saveConfig(`Remove gallery photo: ${filename}`);
+                toast(`${filename} deleted ✓`, 'success');
+                renderGallery();
+            } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+        }
+
+        /* ── Opening Hours ────────────────────────────────────────── */
+        function renderHours() {
+            document.getElementById('hoursRows').innerHTML = config.openingHours.map((row, i) => `
+            <div class="hours-row">
+                <input class="form-control" type="text" value="${esc(row.days_en)}"
+                       placeholder="Day (English)" onchange="config.openingHours[${i}].days_en=this.value">
+                <input class="form-control nl-col" type="text" value="${esc(row.days_nl)}"
+                       placeholder="Dag (NL)" onchange="config.openingHours[${i}].days_nl=this.value">
+                <input class="form-control" type="text" value="${esc(row.hours)}"
+                       placeholder="13:00 – 18:00 or Closed" onchange="config.openingHours[${i}].hours=this.value">
+                <button class="btn btn-danger btn-sm" onclick="removeHourRow(${i})">×</button>
+            </div>`).join('');
+        }
+        function addHourRow() {
+            config.openingHours.push({ days_en: '', days_nl: '', hours: '' });
+            renderHours();
+        }
+        function removeHourRow(i) { config.openingHours.splice(i, 1); renderHours(); }
+
+        async function saveHours() {
+            // Read current input values before saving
+            document.querySelectorAll('#hoursRows .hours-row').forEach((row, i) => {
+                const inputs = row.querySelectorAll('input');
+                if (config.openingHours[i]) {
+                    config.openingHours[i].days_en = inputs[0].value;
+                    config.openingHours[i].days_nl = inputs[1].value;
+                    config.openingHours[i].hours = inputs[2].value;
+                }
+            });
+            toast('Saving hours…', 'info');
+            try {
+                await saveConfig('Update opening hours');
+                toast('Opening hours saved ✓  — site updates in ~30s', 'success');
+            } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+        }
+
+        /* ── Calendars ────────────────────────────────────────────── */
+        function renderCalendars() {
+            const grid = document.getElementById('calGrid');
+            if (!config.calendars.length) {
+                grid.innerHTML = '<p class="empty-state">No calendars — upload one above!</p>';
+                return;
+            }
+            const { owner, repo, branch } = getCreds();
+            grid.innerHTML = config.calendars.map(f => `
+            <div class="photo-item">
+                <img src="https://raw.githubusercontent.com/${owner}/${repo}/${branch}/assets/${encodeURIComponent(f)}"
+                     alt="${esc(f)}" onerror="this.style.background='#eee'">
+                <div class="photo-meta">
+                    <span class="photo-name" title="${esc(f)}">${esc(f)}</span>
+                    <button class="btn btn-danger btn-sm" onclick="deleteCal('${esc(f)}')">🗑</button>
+                </div>
+            </div>`).join('');
+        }
+
+        async function uploadCalendar(file) {
+            if (!file) return;
+            toast(`Uploading ${file.name}…`, 'info');
+            try {
+                const b64 = await toBase64(file);
+                const path = `assets/${file.name}`;
+                let sha = null;
+                try { const ex = await ghGet(path); sha = ex.sha; } catch { }
+                await ghPut(path, b64, `Upload calendar: ${file.name}`, sha);
+                if (!config.calendars.includes(file.name)) config.calendars.push(file.name);
+                await saveConfig(`Add calendar: ${file.name}`);
+                toast(`${file.name} uploaded ✓  — site updates in ~30s`, 'success');
+                renderCalendars();
+            } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+            document.getElementById('calInput').value = '';
+        }
+
+        async function deleteCal(filename) {
+            if (!confirm(`Delete calendar "${filename}"?`)) return;
+            toast(`Deleting ${filename}…`, 'info');
+            try {
+                const file = await ghGet(`assets/${filename}`);
+                await ghDelete(`assets/${filename}`, file.sha, `Remove calendar: ${filename}`);
+                config.calendars = config.calendars.filter(f => f !== filename);
+                await saveConfig(`Remove calendar: ${filename}`);
+                toast(`${filename} deleted ✓`, 'success');
+                renderCalendars();
+            } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+        }
+
+        /* ── GitHub settings ──────────────────────────────────────── */
+        function saveGhSettings() {
+            const creds = {
+                owner: document.getElementById('ghOwner').value.trim(),
+                repo: document.getElementById('ghRepo').value.trim(),
+                branch: document.getElementById('ghBranch').value.trim() || 'main',
+                token: document.getElementById('ghToken').value.trim()
+            };
+            if (!creds.owner || !creds.repo || !creds.token) {
+                toast('Fill in owner, repo, and token first.', 'error'); return;
+            }
+            saveCreds(creds);
+            loadConfig();
+        }
+
+        /* ── Utilities ────────────────────────────────────────────── */
+        function toBase64(file) {
+            return new Promise((res, rej) => {
+                const r = new FileReader();
+                r.onload = () => res(r.result.split(',')[1]);
+                r.onerror = rej;
+                r.readAsDataURL(file);
+            });
+        }
+        function esc(s) {
+            return String(s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        /* ── Render all ───────────────────────────────────────────── */
+        function renderAll() { renderGallery(); renderHours(); renderCalendars(); }
+
+        /* ── Init ─────────────────────────────────────────────────── */
+        function initAdmin() {
+            const c = getCreds();
+            if (c.owner) {
+                document.getElementById('ghOwner').value = c.owner;
+                document.getElementById('ghRepo').value = c.repo;
+                document.getElementById('ghBranch').value = c.branch || 'main';
+                document.getElementById('ghToken').value = c.token;
+                loadConfig();
+            }
+        }
+
+        // Restore session
+        if (sessionStorage.getItem('di_auth') === '1') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            initAdmin();
+        }
+
+        // Enter key on password field
+        document.getElementById('passwordInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+
+</html>

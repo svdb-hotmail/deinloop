@@ -1,0 +1,9 @@
+{
+  "openingHours": [
+    { "days_en": "Monday & Wednesday", "days_nl": "Maandag & Woensdag", "hours": "13:00 \u2013 18:00" },
+    { "days_en": "Friday", "days_nl": "Vrijdag", "hours": "14:00 \u2013 19:00" },
+    { "days_en": "Tuesday, Thursday, Saturday & Sunday", "days_nl": "Dinsdag, Donderdag, Zaterdag & Zondag", "hours": "Closed" }
+  ],
+  "gallery": [],
+  "calendars": ["cal_feb_2025.jpeg", "cal_maart_2025.jpeg"]
+}
