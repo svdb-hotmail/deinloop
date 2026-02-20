@@ -38,9 +38,9 @@
             font-size: 15px;
         }
 
-        /* ── Login ──────────────────────────────────────────────── */
+        /* ── Login ────────────────────────────────────────── */
         #loginScreen {
-            min-height: 100vh;
+            min-height: 100svh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -51,39 +51,55 @@
             background: var(--white);
             border-radius: var(--radius);
             box-shadow: 0 8px 40px rgba(0, 0, 0, .12);
-            padding: 2.5rem 2rem;
+            padding: 2.5rem 1.5rem;
             width: 100%;
             max-width: 380px;
             text-align: center;
         }
 
-        .login-card .lock {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+        .login-card .lock { font-size: 2.5rem; margin-bottom: 1rem; }
+        .login-card h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: .25rem; }
+        .login-card h1 span { color: var(--orange); }
+        .login-card .sub { color: var(--muted); font-size: .85rem; margin-bottom: 1.5rem; }
+
+        /* Biometric button */
+        .btn-biometric {
+            background: #000;
+            color: #fff;
+            width: 100%;
+            justify-content: center;
+            font-size: 1rem;
+            padding: .75rem 1.2rem;
+            border-radius: 10px;
+            margin-bottom: .75rem;
+            gap: .5rem;
+        }
+        .btn-biometric:hover { background: #222; }
+        .btn-biometric svg { flex-shrink: 0; }
+
+        .divider {
+            display: flex; align-items: center; gap: .75rem;
+            color: var(--muted); font-size: .8rem; margin: .75rem 0;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1; height: 1px; background: var(--border);
         }
 
-        .login-card h1 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: .25rem;
-        }
+        .login-err { color: var(--red); font-size: .85rem; margin-top: .75rem; min-height: 1.2em; }
 
-        .login-card h1 span {
-            color: var(--orange);
+        /* Enable biometrics prompt (shown after password login) */
+        .biometric-prompt {
+            display: none;
+            background: #f0f9ff;
+            border: 1.5px solid #bee3f8;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: left;
         }
+        .biometric-prompt p { font-size: .85rem; color: var(--mid); margin-bottom: .75rem; }
+        .biometric-prompt p strong { color: var(--dark); }
 
-        .login-card .sub {
-            color: var(--muted);
-            font-size: .85rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .login-err {
-            color: var(--red);
-            font-size: .85rem;
-            margin-top: .75rem;
-            min-height: 1.2em;
-        }
 
         /* ── Admin nav ──────────────────────────────────────────── */
         .admin-nav {
@@ -431,39 +447,66 @@
             background: #b7791f;
         }
 
-        /* ── Responsive ─────────────────────────────────────────── */
+        /* ── Mobile ────────────────────────────────────────── */
         @media (max-width: 600px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
+            .form-row { grid-template-columns: 1fr; }
 
-            .hours-row,
-            .hours-header {
-                grid-template-columns: 1fr 36px;
-            }
+            .hours-row, .hours-header { grid-template-columns: 1fr 36px; }
+            .hours-row .nl-col, .hours-header .nl-lbl { display: none; }
 
-            .hours-row .nl-col,
-            .hours-header .nl-lbl {
-                display: none;
-            }
+            /* Bigger touch targets on mobile */
+            .form-control { font-size: 16px; /* prevents iOS zoom */ padding: .75rem .9rem; }
+            .btn         { padding: .7rem 1.2rem; min-height: 44px; }
+            .btn-sm      { padding: .5rem .85rem; min-height: 40px; }
+            .upload-zone { padding: 2.25rem 1rem; }
+            .upload-zone .uz-icon { font-size: 2.5rem; }
+
+            /* Single-column photo grid on small screens */
+            .photo-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+
+            /* Admin body padding */
+            .admin-body { padding: 1rem .75rem 5rem; }
+            .section-card { padding: 1.25rem 1rem; }
         }
+
     </style>
 </head>
 
 <body>
 
-    <!-- ── Login ──────────────────────────────────────────────────── -->
+    <!-- ── Login ───────────────────────────────────────────── -->
     <div id="loginScreen">
         <div class="login-card">
-            <div class="lock">🔐</div>
+            <div class="lock">&#x1F510;</div>
             <h1>DE <span>INLOOP</span> Admin</h1>
             <p class="sub">Website management panel</p>
+
+            <!-- Biometric login button (hidden until a passkey is registered) -->
+            <button class="btn btn-biometric" id="biometricBtn" onclick="biometricLogin()" style="display:none">
+                <!-- Face ID icon -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 2H4a2 2 0 0 0-2 2v5M9 22H4a2 2 0 0 1-2-2v-5M22 9V4a2 2 0 0 0-2-2h-5M22 15v5a2 2 0 0 1-2 2h-5"/>
+                    <circle cx="12" cy="10" r="1"/><line x1="12" y1="14" x2="12" y2="16"/>
+                    <path d="M8 8s1-1 4-1 4 1 4 1"/>
+                    <path d="M8 12s1 2 4 2 4-2 4-2"/>
+                </svg>
+                Sign In with Face ID / Touch ID
+            </button>
+
+            <div class="divider" id="loginDivider" style="display:none">or use password</div>
+
             <div class="form-group">
                 <input class="form-control" type="password" id="passwordInput" placeholder="Password"
                     autocomplete="current-password">
             </div>
-            <button class="btn btn-primary" style="width:100%" onclick="login()">Sign In</button>
+            <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="login()">Sign In</button>
             <p class="login-err" id="loginErr"></p>
+
+            <!-- Shown after first password login if WebAuthn is supported -->
+            <div class="biometric-prompt" id="biometricPrompt">
+                <p><strong>Enable Face ID / Touch ID?</strong><br>Next time you can log in with just your face or fingerprint.</p>
+                <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="registerBiometric()">Enable Biometrics</button>
+            </div>
         </div>
     </div>
 
@@ -561,22 +604,125 @@
             _toastTimer = setTimeout(() => el.classList.remove('show'), 5000);
         }
 
-        /* ── Auth ─────────────────────────────────────────────────── */
+        /* ── Auth ──────────────────────────────────────────────── */
+        const WEBAUTHN_RP = location.hostname || 'localhost';
+        const CRED_KEY   = 'di_passkey_id';
+
+        function supportsWebAuthn() {
+            return location.protocol === 'https:' &&
+                   typeof PublicKeyCredential !== 'undefined' &&
+                   typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function';
+        }
+
+        async function passkeyAvailable() {
+            if (!supportsWebAuthn()) return false;
+            const has = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+            return has && !!localStorage.getItem(CRED_KEY);
+        }
+
+        /* Show biometric button if passkey is registered */
+        async function initLoginScreen() {
+            if (await passkeyAvailable()) {
+                document.getElementById('biometricBtn').style.display   = 'flex';
+                document.getElementById('loginDivider').style.display   = 'flex';
+                // Auto-prompt biometrics after brief delay
+                setTimeout(biometricLogin, 400);
+            }
+        }
+
+        async function biometricLogin() {
+            const raw = localStorage.getItem(CRED_KEY);
+            if (!raw) return;
+            try {
+                const challenge = crypto.getRandomValues(new Uint8Array(32));
+                const credId    = new Uint8Array([...atob(raw)].map(c => c.charCodeAt(0)));
+                const cred = await navigator.credentials.get({
+                    publicKey: {
+                        challenge,
+                        rpId: WEBAUTHN_RP,
+                        allowCredentials: [{ type: 'public-key', id: credId, transports: ['internal'] }],
+                        userVerification: 'required',
+                        timeout: 60000
+                    }
+                });
+                if (cred) { doLogin(); }
+            } catch (e) {
+                // User cancelled or failed — fall back to password silently
+                if (e.name !== 'NotAllowedError') {
+                    document.getElementById('loginErr').textContent = 'Biometrics failed — use password.';
+                }
+            }
+        }
+
+        async function registerBiometric() {
+            if (!supportsWebAuthn()) {
+                toast('Face ID / Touch ID is only available on HTTPS (the live site).', 'warn');
+                return;
+            }
+            try {
+                const challenge = crypto.getRandomValues(new Uint8Array(32));
+                const userId    = crypto.getRandomValues(new Uint8Array(16));
+                const cred = await navigator.credentials.create({
+                    publicKey: {
+                        challenge,
+                        rp:   { name: 'DE INLOOP Admin', id: WEBAUTHN_RP },
+                        user: { id: userId, name: 'admin', displayName: 'Admin' },
+                        pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
+                        authenticatorSelection: {
+                            authenticatorAttachment: 'platform',
+                            requireResidentKey: true,
+                            userVerification: 'required'
+                        },
+                        timeout: 60000
+                    }
+                });
+                // Store credential ID (base64) for future use
+                const id64 = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+                localStorage.setItem(CRED_KEY, id64);
+                document.getElementById('biometricPrompt').style.display = 'none';
+                toast('Face ID / Touch ID enabled! 👍 Next login will use biometrics.', 'success');
+            } catch (e) {
+                toast('Could not enable biometrics: ' + e.message, 'error');
+            }
+        }
+
+        function doLogin() {
+            sessionStorage.setItem('di_auth', '1');
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display  = 'block';
+            initAdmin();
+        }
+
         function login() {
             const pw = document.getElementById('passwordInput').value;
             if (pw === CONFIG.password) {
-                sessionStorage.setItem('di_auth', '1');
-                document.getElementById('loginScreen').style.display = 'none';
-                document.getElementById('adminPanel').style.display = 'block';
-                initAdmin();
+                doLogin();
+                // Offer biometrics registration if WebAuthn is supported and not yet set up
+                if (supportsWebAuthn() && !localStorage.getItem(CRED_KEY)) {
+                    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(has => {
+                        if (has) document.getElementById('biometricPrompt').style.display = 'block';
+                    });
+                }
             } else {
                 document.getElementById('loginErr').textContent = 'Incorrect password.';
-                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').value  = '';
             }
         }
         function logout() {
             sessionStorage.removeItem('di_auth');
             location.reload();
+        }
+
+        /* Check session still valid on load */
+        if (sessionStorage.getItem('di_auth') === '1') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display  = 'block';
+        } else {
+            initLoginScreen();
+            // Dismiss login on Enter key
+            document.getElementById('passwordInput').addEventListener('keydown', e => {
+                if (e.key === 'Enter') login();
+            });
         }
 
         /* ── GitHub API helpers ────────────────────────────────────── */
