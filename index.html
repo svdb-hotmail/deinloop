@@ -421,6 +421,138 @@
         }
 
         /* ─── Responsive ────────────────────────────────────────────── */
+        /* ─── Gallery carousel ───────────────────────────────────────── */
+        .gallery-section {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem 2.25rem;
+            margin-bottom: 1.75rem;
+            border-left: 4px solid var(--orange);
+            overflow: hidden;
+        }
+
+        .gallery-section h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .carousel-wrap {
+            position: relative;
+        }
+
+        .carousel-viewport {
+            overflow: hidden;
+            border-radius: 10px;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform .4s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .carousel-slide {
+            min-width: 100%;
+            aspect-ratio: 16/9;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .carousel-slide .placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f5f0e8 0%, #ede8de 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: .75rem;
+            color: var(--muted);
+        }
+
+        .carousel-slide .placeholder .ph-icon {
+            font-size: 3rem;
+            opacity: .5;
+        }
+
+        .carousel-slide .placeholder .ph-label {
+            font-size: .85rem;
+            font-weight: 500;
+            font-family: monospace;
+            background: rgba(0, 0, 0, .06);
+            padding: .3rem .7rem;
+            border-radius: 6px;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, .92);
+            border: none;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background .2s, transform .15s;
+            z-index: 2;
+            color: var(--dark);
+        }
+
+        .carousel-btn:hover {
+            background: var(--orange);
+            color: #fff;
+            transform: translateY(-50%) scale(1.08);
+        }
+
+        .carousel-btn.prev {
+            left: .6rem;
+        }
+
+        .carousel-btn.next {
+            right: .6rem;
+        }
+
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: .5rem;
+            margin-top: .9rem;
+        }
+
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            transition: background .2s, transform .2s;
+        }
+
+        .carousel-dot.active {
+            background: var(--orange);
+            transform: scale(1.3);
+        }
+
         @media (max-width: 620px) {
             .nav-links {
                 display: none;
@@ -436,6 +568,12 @@
 
             .calendar-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .carousel-btn {
+                width: 34px;
+                height: 34px;
+                font-size: .9rem;
             }
         }
     </style>
@@ -522,6 +660,65 @@
                 activities. We also make our spaces available for a diverse range of purposes, from music groups to
                 private events.
             </p>
+        </div>
+
+        <!-- ── Photo Gallery ──────────────────────────────────────────── -->
+        <div class="gallery-section" id="gallery">
+            <h2><span>📸</span> <span data-lang data-en="Photo Gallery" data-nl="Fotogalerij">Photo Gallery</span></h2>
+            <div class="carousel-wrap">
+                <div class="carousel-viewport" id="carouselViewport">
+                    <div class="carousel-track" id="carouselTrack">
+
+                        <!-- Slide 1 — replace src with your real photo path -->
+                        <div class="carousel-slide">
+                            <div class="placeholder">
+                                <span class="ph-icon">📷</span>
+                                <span class="ph-label">assets/gallery/photo1.jpg</span>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2 -->
+                        <div class="carousel-slide">
+                            <div class="placeholder">
+                                <span class="ph-icon">📷</span>
+                                <span class="ph-label">assets/gallery/photo2.jpg</span>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3 -->
+                        <div class="carousel-slide">
+                            <div class="placeholder">
+                                <span class="ph-icon">📷</span>
+                                <span class="ph-label">assets/gallery/photo3.jpg</span>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4 -->
+                        <div class="carousel-slide">
+                            <div class="placeholder">
+                                <span class="ph-icon">📷</span>
+                                <span class="ph-label">assets/gallery/photo4.jpg</span>
+                            </div>
+                        </div>
+
+                        <!-- Slide 5 -->
+                        <div class="carousel-slide">
+                            <div class="placeholder">
+                                <span class="ph-icon">📷</span>
+                                <span class="ph-label">assets/gallery/photo5.jpg</span>
+                            </div>
+                        </div>
+
+                        <!-- Add more slides here -->
+
+                    </div><!-- /.carousel-track -->
+                </div><!-- /.carousel-viewport -->
+
+                <button class="carousel-btn prev" id="carouselPrev" aria-label="Previous photo">&#8592;</button>
+                <button class="carousel-btn next" id="carouselNext" aria-label="Next photo">&#8594;</button>
+            </div><!-- /.carousel-wrap -->
+
+            <div class="carousel-dots" id="carouselDots"></div>
         </div>
 
         <!-- ── How You Can Help ─────────────────────────────────────── -->
@@ -657,6 +854,7 @@
     </footer>
 
     <script>
+        /* ── Language switcher ───────────────────────────────────────── */
         function changeLanguage(lang) {
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const val = el.getAttribute('data-' + lang);
@@ -665,6 +863,49 @@
             document.getElementById('btn-en').classList.toggle('active', lang === 'en');
             document.getElementById('btn-nl').classList.toggle('active', lang === 'nl');
         }
+
+        /* ── Photo carousel ──────────────────────────────────────────── */
+        (function () {
+            const track = document.getElementById('carouselTrack');
+            const slides = track.querySelectorAll('.carousel-slide');
+            const dotsEl = document.getElementById('carouselDots');
+            const total = slides.length;
+            let cur = 0;
+
+            /* Build dots */
+            slides.forEach((_, i) => {
+                const d = document.createElement('button');
+                d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                d.setAttribute('aria-label', 'Go to photo ' + (i + 1));
+                d.addEventListener('click', () => goTo(i));
+                dotsEl.appendChild(d);
+            });
+
+            function goTo(idx) {
+                cur = (idx + total) % total;
+                track.style.transform = 'translateX(-' + cur * 100 + '%)';
+                dotsEl.querySelectorAll('.carousel-dot').forEach((d, i) =>
+                    d.classList.toggle('active', i === cur));
+            }
+
+            document.getElementById('carouselPrev').addEventListener('click', () => goTo(cur - 1));
+            document.getElementById('carouselNext').addEventListener('click', () => goTo(cur + 1));
+
+            /* Keyboard arrows */
+            document.addEventListener('keydown', e => {
+                if (e.key === 'ArrowLeft') goTo(cur - 1);
+                if (e.key === 'ArrowRight') goTo(cur + 1);
+            });
+
+            /* Touch swipe */
+            let touchStartX = 0;
+            const vp = document.getElementById('carouselViewport');
+            vp.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+            vp.addEventListener('touchend', e => {
+                const diff = touchStartX - e.changedTouches[0].clientX;
+                if (Math.abs(diff) > 40) goTo(diff > 0 ? cur + 1 : cur - 1);
+            }, { passive: true });
+        })();
     </script>
 </body>
 
