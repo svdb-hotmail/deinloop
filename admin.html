@@ -472,39 +472,12 @@
         <nav class="admin-nav">
             <span class="brand">DE <span>INLOOP</span><span class="tag">ADMIN</span></span>
             <div class="nav-right">
-                <span class="conn-dot" id="connDot" title="GitHub connection status"></span>
-                <button class="btn btn-logout btn-sm" onclick="toggleSettings()" id="settingsBtn">⚙️ Settings</button>
                 <button class="btn btn-logout btn-sm" onclick="logout()">← Logout</button>
             </div>
         </nav>
 
-        <!-- Collapsible GitHub Settings -->
-        <div class="settings-panel" id="settingsPanel">
-            <div class="settings-panel-inner">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Repository Owner</label>
-                        <input id="ghOwner" class="form-control" type="text" placeholder="svdb-hotmail">
-                    </div>
-                    <div class="form-group">
-                        <label>Repository Name</label>
-                        <input id="ghRepo" class="form-control" type="text" placeholder="deinloop">
-                    </div>
-                    <div class="form-group">
-                        <label>Branch</label>
-                        <input id="ghBranch" class="form-control" type="text" placeholder="main">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Personal Access Token
-                        <a href="https://github.com/settings/tokens/new?scopes=repo&description=deinloop-admin"
-                            target="_blank">(create one ↗)</a>
-                    </label>
-                    <input id="ghToken" class="form-control" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-                </div>
-                <button class="btn btn-primary" onclick="saveGhSettings()">Save &amp; Connect</button>
-            </div>
-        </div>
+        <!-- Collapsible GitHub Settings removed: credentials are baked into the CONFIG block -->
+
 
         <!-- Gallery -->
         <div class="section-card">
@@ -556,23 +529,27 @@
     </div><!-- /#adminPanel -->
 
     <script>
-        /* ─────────────────────────────────────────────────────────────
-           CHANGE THE PASSWORD BELOW.
-           To find your new password hash: open browser console → type:
-             btoa('yourpassword')
-           Then replace the ADMIN_PASSWORD value with that string,
-           and set USE_PLAIN = true (plain text comparison).
-           Or just change the string directly — it's plain text below.
-        ──────────────────────────────────────────────────────────── */
-        const ADMIN_PASSWORD = 'deinloop2025';
+        /* ================================================================
+         *  CONFIG — fill in once, then share this file with the admin.
+         *  This file is in .gitignore and will NOT be pushed to GitHub.
+         * ================================================================ */
+        const CONFIG = {
+            password: 'deinloop2025',   // ← change this
+            owner: 'svdb-hotmail',   // GitHub username
+            repo: 'deinloop',       // repository name
+            branch: 'main',           // branch to commit to
+            token: ''                // ← paste your GitHub PAT here
+        };
+        /* ================================================================ */
+
 
         /* ── State ────────────────────────────────────────────────── */
         let config = null;
         let configSha = null;
 
         /* ── Credentials (stored in localStorage) ─────────────────── */
-        function getCreds() { return JSON.parse(localStorage.getItem('di_creds') || '{}'); }
-        function saveCreds(c) { localStorage.setItem('di_creds', JSON.stringify(c)); }
+        // Removed: function getCreds() { return JSON.parse(localStorage.getItem('di_creds') || '{}'); }
+        // Removed: function saveCreds(c) { localStorage.setItem('di_creds', JSON.stringify(c)); }
 
         /* ── Toast ────────────────────────────────────────────────── */
         let _toastTimer;
@@ -587,7 +564,7 @@
         /* ── Auth ─────────────────────────────────────────────────── */
         function login() {
             const pw = document.getElementById('passwordInput').value;
-            if (pw === ADMIN_PASSWORD) {
+            if (pw === CONFIG.password) {
                 sessionStorage.setItem('di_auth', '1');
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('adminPanel').style.display = 'block';
@@ -605,20 +582,20 @@
         /* ── GitHub API helpers ────────────────────────────────────── */
         const GH = 'https://api.github.com';
         function ghHeaders() {
-            const { token } = getCreds();
-            return { 'Authorization': `token ${token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
+            // const { token } = getCreds(); // Removed
+            return { 'Authorization': `token ${CONFIG.token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
         }
-        function repoBase() { const { owner, repo } = getCreds(); return `${GH}/repos/${owner}/${repo}/contents`; }
+        function repoBase() { // const { owner, repo } = getCreds(); // Removed
+            return `${GH}/repos/${CONFIG.owner}/${CONFIG.repo}/contents`;
+        }
 
         async function ghGet(path) {
-            const { branch } = getCreds();
-            const res = await fetch(`${repoBase()}/${path}?ref=${encodeURIComponent(branch)}`, { headers: ghHeaders() });
+            const res = await fetch(`${repoBase()}/${path}?ref=${encodeURIComponent(CONFIG.branch)}`, { headers: ghHeaders() });
             if (!res.ok) throw new Error(`GET failed (${res.status})`);
             return res.json();
         }
         async function ghPut(path, b64, message, sha = null) {
-            const { branch } = getCreds();
-            const body = { message, content: b64, branch };
+            const body = { message, content: b64, branch: CONFIG.branch };
             if (sha) body.sha = sha;
             const res = await fetch(`${repoBase()}/${path}`, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
             const data = await res.json();
@@ -626,10 +603,9 @@
             return data;
         }
         async function ghDelete(path, sha, message) {
-            const { branch } = getCreds();
             const res = await fetch(`${repoBase()}/${path}`, {
                 method: 'DELETE', headers: ghHeaders(),
-                body: JSON.stringify({ message, sha, branch })
+                body: JSON.stringify({ message, sha, branch: CONFIG.branch })
             });
             if (!res.ok) { const d = await res.json(); throw new Error(d.message || `DELETE failed (${res.status})`); }
         }
@@ -651,14 +627,14 @@
                 const file = await ghGet('assets/config.json');
                 configSha = file.sha;
                 config = JSON.parse(atob(file.content.replace(/\s/g, '')));
-                setConnected(true);
-                // Close settings panel once connected successfully
-                document.getElementById('settingsPanel').classList.remove('open');
+                // setConnected(true); // Removed
+                // Close settings panel once connected successfully // Removed
+                // document.getElementById('settingsPanel').classList.remove('open'); // Removed
                 toast('Config loaded ✓', 'success');
             } catch (e) {
                 config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
                 configSha = null;
-                setConnected(false);
+                // setConnected(false); // Removed
                 toast('No config.json found — using defaults. Save any section to create it.', 'warn');
             }
             renderAll();
@@ -677,10 +653,9 @@
                 grid.innerHTML = '<p class="empty-state">No photos yet — upload some above!</p>';
                 return;
             }
-            const { owner, repo, branch } = getCreds();
             grid.innerHTML = config.gallery.map(f => `
             <div class="photo-item">
-                <img src="https://raw.githubusercontent.com/${owner}/${repo}/${branch}/assets/gallery/${encodeURIComponent(f)}"
+                <img src="https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/assets/gallery/${encodeURIComponent(f)}"
                      alt="${esc(f)}" onerror="this.style.background='#eee'">
                 <div class="photo-meta">
                     <span class="photo-name" title="${esc(f)}">${esc(f)}</span>
@@ -763,10 +738,9 @@
                 grid.innerHTML = '<p class="empty-state">No calendars — upload one above!</p>';
                 return;
             }
-            const { owner, repo, branch } = getCreds();
             grid.innerHTML = config.calendars.map(f => `
             <div class="photo-item">
-                <img src="https://raw.githubusercontent.com/${owner}/${repo}/${branch}/assets/${encodeURIComponent(f)}"
+                <img src="https://raw.githubusercontent.com/${CONFIG.owner}/${CONFIG.repo}/${CONFIG.branch}/assets/${encodeURIComponent(f)}"
                      alt="${esc(f)}" onerror="this.style.background='#eee'">
                 <div class="photo-meta">
                     <span class="photo-name" title="${esc(f)}">${esc(f)}</span>
@@ -806,19 +780,7 @@
         }
 
         /* ── GitHub settings ──────────────────────────────────────── */
-        function saveGhSettings() {
-            const creds = {
-                owner: document.getElementById('ghOwner').value.trim(),
-                repo: document.getElementById('ghRepo').value.trim(),
-                branch: document.getElementById('ghBranch').value.trim() || 'main',
-                token: document.getElementById('ghToken').value.trim()
-            };
-            if (!creds.owner || !creds.repo || !creds.token) {
-                toast('Fill in owner, repo, and token first.', 'error'); return;
-            }
-            saveCreds(creds);
-            loadConfig();
-        }
+        // Removed: function saveGhSettings() { ... }
 
         /* ── Utilities ────────────────────────────────────────────── */
         function toBase64(file) {
@@ -839,26 +801,26 @@
         function renderAll() { renderGallery(); renderHours(); renderCalendars(); }
 
         /* ── Settings toggle ───────────────────────────────────── */
-        function toggleSettings() {
-            const panel = document.getElementById('settingsPanel');
-            panel.classList.toggle('open');
-        }
-        function setConnected(ok) {
-            document.getElementById('connDot').className = 'conn-dot ' + (ok ? 'ok' : 'err');
-        }
+        // Removed: function toggleSettings() { ... }
+        // Removed: function setConnected(ok) { ... }
 
-        /* ── Init ─────────────────────────────────────────────────── */
+        /* ── Init (credentials come from CONFIG block, not localStorage) ── */
         function initAdmin() {
-            const c = getCreds();
-            if (c.owner) {
-                document.getElementById('ghOwner').value = c.owner;
-                document.getElementById('ghRepo').value = c.repo;
-                document.getElementById('ghBranch').value = c.branch || 'main';
-                document.getElementById('ghToken').value = c.token;
-                loadConfig();
+            // const c = getCreds(); // Removed
+            // if (c.owner) { // Removed
+            //     document.getElementById('ghOwner').value = c.owner; // Removed
+            //     document.getElementById('ghRepo').value = c.repo; // Removed
+            //     document.getElementById('ghBranch').value = c.branch || 'main'; // Removed
+            //     document.getElementById('ghToken').value = c.token; // Removed
+            //     loadConfig(); // Removed
+            // } else { // Removed
+            //     // No credentials yet — open settings automatically // Removed
+            //     document.getElementById('settingsPanel').classList.add('open'); // Removed
+            // } // Removed
+            if (!CONFIG.token) {
+                toast('No token set in CONFIG block. Open admin.html in a text editor and fill in the token field.', 'error');
             } else {
-                // No credentials yet — open settings automatically
-                document.getElementById('settingsPanel').classList.add('open');
+                loadConfig();
             }
         }
 
