@@ -1,113 +1,671 @@
 <!DOCTYPE html>
 <html lang="en" id="html">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-lang data-en="Social Walk-In Center 'DE INLOOP'" data-nl="Sociaal Inloopcentrum 'DE INLOOP'">Social Walk-In Center 'DE INLOOP'</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title data-lang data-en="Social Walk-In Center 'DE INLOOP'" data-nl="Sociaal Inloopcentrum 'DE INLOOP'">Social
+        Walk-In Center 'DE INLOOP'</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .title-color {
-            color: #FFA500;
+        /* ─── Design tokens ─────────────────────────────────────────── */
+        :root {
+            --orange: #FFA500;
+            --orange-dark: #e08c00;
+            --orange-soft: #fff4e0;
+            --dark: #1a1a1a;
+            --mid: #444;
+            --muted: #888;
+            --cream: #fffdf8;
+            --white: #ffffff;
+            --border: #eee;
+            --shadow: 0 2px 16px rgba(0, 0, 0, .07);
+            --radius: 14px;
+        }
+
+        /* ─── Reset & base ──────────────────────────────────────────── */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f0;
+            color: var(--dark);
+            line-height: 1.75;
+            font-size: 16px;
+        }
+
+        /* ─── Nav ───────────────────────────────────────────────────── */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--white);
+            border-bottom: 3px solid var(--orange);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+        }
+
+        .nav-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: .75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--dark);
+            text-decoration: none;
+            letter-spacing: -.3px;
+        }
+
+        .nav-brand span {
+            color: var(--orange);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--mid);
+            font-size: .875rem;
+            font-weight: 500;
+            transition: color .2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--orange);
+        }
+
+        .lang-toggle {
+            display: flex;
+            gap: .4rem;
+        }
+
+        .lang-toggle button {
+            background: none;
+            border: 1.5px solid var(--border);
+            border-radius: 6px;
+            padding: .2rem .55rem;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--muted);
+            transition: all .2s;
+            font-family: inherit;
+        }
+
+        .lang-toggle button:hover,
+        .lang-toggle button.active {
+            border-color: var(--orange);
+            color: var(--orange);
+        }
+
+        /* ─── Page wrapper ──────────────────────────────────────────── */
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 1.5rem 4rem;
+        }
+
+        /* ─── Hero ──────────────────────────────────────────────────── */
+        .hero {
+            background: var(--white);
+            text-align: center;
+            padding: 3.5rem 2rem 3rem;
+            margin-bottom: 2.5rem;
+            border-radius: 0 0 var(--radius) var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .hero img.logo {
+            width: 110px;
+            height: 110px;
+            object-fit: contain;
+            margin-bottom: 1.25rem;
+            border-radius: 50%;
+            border: 3px solid var(--orange-soft);
+        }
+
+        .hero h1 {
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            font-weight: 700;
+            color: var(--orange);
+            line-height: 1.2;
+            margin-bottom: .5rem;
+        }
+
+        .hero .subtitle {
+            font-size: 1.05rem;
+            color: var(--mid);
+            margin-bottom: .4rem;
+            font-weight: 500;
+        }
+
+        .hero .tagline {
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--orange-dark);
+            margin-bottom: 1.75rem;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            background: var(--orange);
+            color: var(--white);
+            text-decoration: none;
+            padding: .8rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: .95rem;
+            transition: background .2s, transform .15s;
+            box-shadow: 0 4px 14px rgba(255, 165, 0, .35);
+        }
+
+        .cta-btn:hover {
+            background: var(--orange-dark);
+            transform: translateY(-2px);
+        }
+
+        /* ─── Section cards ─────────────────────────────────────────── */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem 2.25rem;
+            margin-bottom: 1.75rem;
+            border-left: 4px solid var(--orange);
+        }
+
+        .card h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .card h2 .icon {
+            font-size: 1.2rem;
+        }
+
+        .card p {
+            color: var(--mid);
+            margin-bottom: .75rem;
+        }
+
+        .card p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ─── Icon grid (How You Can Help) ──────────────────────────── */
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: .5rem;
+        }
+
+        .help-item {
+            background: var(--cream);
+            border-radius: 10px;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            border: 1.5px solid transparent;
+            transition: border-color .2s, transform .15s;
+        }
+
+        .help-item:hover {
+            border-color: var(--orange);
+            transform: translateY(-2px);
+        }
+
+        .help-item .help-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: .5rem;
+        }
+
+        .help-item strong {
+            display: block;
+            font-size: .95rem;
+            color: var(--dark);
+            margin-bottom: .25rem;
+        }
+
+        .help-item p {
+            font-size: .85rem;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        /* ─── Contact strip ──────────────────────────────────────────── */
+        .contact-strip {
+            background: var(--orange);
+            border-radius: var(--radius);
+            padding: 2rem 2.25rem;
+            margin-bottom: 1.75rem;
+            color: var(--white);
+        }
+
+        .contact-strip h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .contact-item {
+            background: rgba(255, 255, 255, .18);
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: .75rem;
+        }
+
+        .contact-item .ci-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            margin-top: .1rem;
+        }
+
+        .contact-item .ci-label {
+            font-size: .75rem;
+            font-weight: 600;
+            opacity: .75;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            display: block;
+            margin-bottom: .1rem;
+        }
+
+        .contact-item .ci-value {
+            font-size: .92rem;
+            font-weight: 500;
+        }
+
+        /* ─── Hours table ────────────────────────────────────────────── */
+        .hours-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: .5rem;
+        }
+
+        .hours-table thead tr {
+            background: var(--orange);
+            color: var(--white);
+        }
+
+        .hours-table th {
+            padding: .8rem 1rem;
+            text-align: left;
+            font-size: .875rem;
+            font-weight: 600;
+        }
+
+        .hours-table tbody tr:nth-child(even) {
+            background: #fff8ee;
+        }
+
+        .hours-table tbody tr:nth-child(odd) {
+            background: var(--white);
+        }
+
+        .hours-table td {
+            padding: .75rem 1rem;
+            font-size: .9rem;
+            color: var(--mid);
+            border-bottom: 1px solid #f0e8d8;
+        }
+
+        .hours-table .closed {
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        /* ─── Calendar section ──────────────────────────────────────── */
+        .calendar-section {
+            margin-bottom: 1.75rem;
+        }
+
+        .calendar-section h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .calendar-grid img {
+            width: 100%;
+            height: auto;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        /* ─── Footer ────────────────────────────────────────────────── */
+        footer {
+            background: var(--dark);
+            color: rgba(255, 255, 255, .6);
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            margin-top: 3rem;
+        }
+
+        footer .footer-quote {
+            font-style: italic;
+            color: var(--orange);
+            font-size: 1rem;
+            margin-bottom: .75rem;
+        }
+
+        footer .footer-copy {
+            font-size: .85rem;
+            margin-bottom: .5rem;
+        }
+
+        footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        footer .footer-links a {
+            color: rgba(255, 255, 255, .4);
+            text-decoration: none;
+            font-size: .8rem;
+            transition: color .2s;
+        }
+
+        footer .footer-links a:hover {
+            color: var(--orange);
+        }
+
+        /* ─── Responsive ────────────────────────────────────────────── */
+        @media (max-width: 620px) {
+            .nav-links {
+                display: none;
+            }
+
+            .help-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body class="font-sans bg-white text-black dark:bg-black dark:text-white" id="body">
-    <div class="container mx-auto max-w-screen-lg">
-        <header class="bg-white dark:bg-black p-4"> 
-			<div class="flex justify-center">
-				<img src="assets/logo.jpg" alt="Logo" class="w-32 h-32">
-			</div>
-			<h1 class="text-center text-4xl title-color mb-4">Your Support, Their Hope</h1>
-			<h2 class="text-center text-xl">Social Walk-In Center ‘DE INLOOP’ in Sint-Niklaas</h2>
-			<h3 class="text-center text-2xl title-color mb-2">“Extending a hand, touching a heart”</h3>
-			<!-- Language Selection -->
-			<div class="text-right">
-				<button onclick="changeLanguage('en')">EN</button>
-				<button onclick="changeLanguage('nl')">NL</button>
-			</div>
-        </header>
-<main class="p-8">
-    <section class="mb-8">
-        <h4 class="text-xl title-color mb-4" data-lang data-en="Our Mission" data-nl="Onze Missie">Our Mission</h4>
-        <p data-lang data-en="We aim to be THE meeting place of Sint-Niklaas. Our walk-in center 'DE INLOOP' provides a home for all, especially for our fellow citizens in (risk of) impoverished situations. We not only offer a listening ear and social and societal advice, but also support in meeting basic necessities of life." data-nl="Wij streven ernaar dé ontmoetingsplek van Sint-Niklaas te zijn. Ons inloophuis biedt een thuis aan allen, in het bijzonder voor onze medemensen in (kans)arme situaties. We bieden niet alleen een luisterend oor en sociaal-maatschappelijk advies, maar ook ondersteuning bij het voldoen aan primaire levensbehoeften.">We aim to be THE meeting place of Sint-Niklaas. Our walk-in center 'DE INLOOP' provides a home for all, especially for our fellow citizens in (risk of) impoverished situations. We not only offer a listening ear and social and societal advice, but also support in meeting basic necessities of life.</p>
-    </section>
-    
-    <section class="mb-8">
-        <h4 class="text-xl title-color mb-4" data-lang data-en="Our Vision" data-nl="Onze Visie">Our Vision</h4>
-        <p data-lang data-en="We envision the Social Walk-In Center 'DE INLOOP' as a primary incubator where respect and equality are central. Everyone is welcome here, regardless of belief, worldview, political inclination, race, gender, or any other basis. We aim to provide everyone who enters our doors with the tools and necessary support to independently and confidently discover and pursue their unique path in the world." data-nl="Wij zien het Sociaal Inloophuis 'DE INLOOP' als een eerste broedplaats waar respect en gelijkheid centraal staan. Hier is iedereen welkom, ongeacht geloof, levensovertuiging, politieke gezindheid, ras, geslacht of welke grond dan ook. Wij willen iedereen die bij ons binnenkomt de hulpmiddelen en nodige steun bieden om zelfstandig en met geheven hoofd hun eigen unieke pad in de wereld te ontdekken en te volgen.">We envision the Social Walk-In Center 'DE INLOOP' as a primary incubator where respect and equality are central. Everyone is welcome here, regardless of belief, worldview, political inclination, race, gender, or any other basis. We aim to provide everyone who enters our doors with the tools and necessary support to independently and confidently discover and pursue their unique path in the world.</p>
-    </section>
 
-    <section class="mb-8">
-        <h4 class="text-xl title-color mb-4" data-lang data-en="Our Goals" data-nl="Onze Doelen">Our Goals</h4>
-        <p data-lang data-en="We strive to create a platform that supports individuals to unlock their full potential. We provide not only essential items such as clothes,household goods, toys, and food, but also strive to create opportunities for growth and development. Our giveaway shop and coffee/lunch corner are the foundations of this mission, but we go further. We offer educational and language support to kids, youth and adults, organize creative activities for children to develop their skills, and promote social interaction through singing, dancing, and sports activities." data-nl="Wij streven ernaar een platform te creëren dat individuen ondersteunt om hun volledige potentieel te bereiken. We bieden niet alleen noodzakelijke middelen zoals kleding, huisraad, speelgoed en voedsel, maar zetten ons ook in om kansen te creëren voor groei en ontwikkeling. Onze weggeefwinkel en koffie-/lunchhoek zijn de fundamenten van deze missie, maar we gaan verder dan dat. We bieden onderwijs- en taalondersteuning aan kinderen, jongeren en volwassenen, organiseren creatieve activiteiten voor kinderen om hun vaardigheden te ontwikkelen en moedigen sociale interactie aan door middel van zang-, dans- en sportactiviteiten.">We strive to create a platform that supports individuals to unlock their full potential. We provide not only essential items such as clothes,household goods, toys, and food, but also strive to create opportunities for growth and development. Our giveaway shop and coffee/lunch corner are the foundations of this mission, but we go further. We offer educational and language support to kids, youth and adults, organize creative activities for children to develop their skills, and promote social interaction through singing, dancing, and sports activities.</p>
-		<p data-lang data-en="Furthermore, we make our spaces available for a diverse range of purposes, from music groups to private events, ensuring our facilities support a vibrant and inclusive community. Everything we do is aimed at fostering resilience, self-confidence, and social inclusion, so that everyone who enters 'DE INLOOP' finds the resources and support to grow and contribute to the community." data-nl="Bovendien stellen we onze ruimtes beschikbaar voor uiteenlopende doeleinden, van muziekgroepen tot privé-evenementen, zodat onze faciliteiten een levendige en inclusieve gemeenschap ondersteunen. Alles wat we doen, is gericht op het bevorderen van veerkracht, zelfvertrouwen en sociale inclusie, zodat iedereen die ons inloophuis binnenkomt de middelen en ondersteuning vindt om zichzelf te ontplooien en bij te dragen aan de gemeenschap.">We strive to create a platform...</p>
-    </section>
+<body>
 
-    <section class="mb-8">
-        <h4 class="text-xl title-color mb-4" data-lang data-en="How You Can Help" data-nl="Hoe U Kunt Helpen">How You Can Help</h4> 
-		<p data-lang data-en="You can contribute through financial support, by lending a hand in the renovation of our premises, by donating goods in good condition for our giveaway shop, or by offering your time and heart as a volunteer in our team of passionate and loving individuals." data-nl="U kunt bijdragen door uw financiële steun, door met ons samen de handen uit de mouwen te steken in de renovatie van onze locatie, het doneren van goederen in goede staat voor onze weggeefwinkel, of door uw tijd en hart te geven als vrijwilliger in ons team van gepassioneerde en liefdevolle mensen.">You can contribute through financial support, by lending a hand in the renovation of our premises, by donating goods in good condition for our giveaway shop, or by offering your time and heart as a volunteer in our team of passionate and loving individuals.</p>
-        <ul class="list-inside list-disc">
-            <li data-lang data-en="Financial Contribution: Support us with your financial donations to enable our projects and activities." data-nl="Financiële Bijdrage: Ondersteun ons met uw financiële giften om onze projecten en activiteiten mogelijk te maken.">Financial Contribution: Support us with your financial donations to enable our projects and activities.</li>
-			<li data-lang data-en="Volunteer: Join our team and contribute your time and skills in various roles within our organization." data-nl="Vrijwilligerswerk: Sluit u aan bij ons team en draag bij met uw tijd en vaardigheden in diverse rollen binnen onze organisatie.">Volunteer: Join our team and contribute your time and skills in various roles within our organization.</li>
-			<li data-lang data-en="Donate Goods: Provide items in good condition for our giveaway shop to assist those in need." data-nl="Goederen Doneren: Lever items in goede staat in voor onze weggeefwinkel om degenen in nood te helpen.">Donate Goods: Provide items in good condition for our giveaway shop to assist those in need.</li>
-			<li data-lang data-en="Share Our Story: Help expand our reach by sharing our story within your network and community." data-nl="Deel Ons Verhaal: Help ons bereik te vergroten door ons verhaal te delen binnen uw netwerk en gemeenschap.">Share Our Story: Help expand our reach by sharing our story within your network and community.</li>
-            <!-- ... (other list items with data-lang, data-en, and data-nl attributes) ... -->
-        </ul>
-		<p data-lang data-en="We are a non-profit organization, driven by the desire to be a beacon of hope in the lives of those facing hardship." data-nl="Wij zijn een organisatie zonder winstoogmerk, gedreven door de wens om een lichtpunt te zijn in de levens van de mensen die het moeilijk hebben.">We are a non-profit organization, driven by the desire to be a beacon of hope in the lives of those facing hardship.</p>
-    </section>
+    <!-- ── Nav ─────────────────────────────────────────────────────── -->
+    <nav>
+        <div class="nav-inner">
+            <a class="nav-brand" href="#top">DE <span>INLOOP</span></a>
+            <ul class="nav-links">
+                <li><a href="#mission" data-lang data-en="Mission" data-nl="Missie">Mission</a></li>
+                <li><a href="#vision" data-lang data-en="Vision" data-nl="Visie">Vision</a></li>
+                <li><a href="#goals" data-lang data-en="Goals" data-nl="Doelen">Goals</a></li>
+                <li><a href="#help" data-lang data-en="How to Help" data-nl="Help Ons">How to Help</a></li>
+                <li><a href="#contact" data-lang data-en="Contact" data-nl="Contact">Contact</a></li>
+            </ul>
+            <div class="lang-toggle">
+                <button onclick="changeLanguage('en')" id="btn-en" class="active">EN</button>
+                <button onclick="changeLanguage('nl')" id="btn-nl">NL</button>
+            </div>
+        </div>
+    </nav>
 
-<section class="mb-8">
-    <h4 class="text-xl title-color mb-4" data-lang data-en="Get Involved Today" data-nl="Doe Vandaag Nog Mee">Get Involved Today</h4>
-    <p data-lang data-en="📧 Email: info@deinloop.eu" data-nl="📧 E-mail: info@deinloop.eu">📧 Email: info@deinloop.eu</p>
-    <p data-lang data-en="📞 Phone: +32 487 127 770" data-nl="📞 Telefoon: +32 487 127 770">📞 Phone: +32 487 127 770</p>
-    <p data-lang data-en="💳 Bank Account: T.n.v. Esmee Kester Ministries VZW  BE29 3631 6167 2364" data-nl="💳 Bankrekening: T.n.v. Esmee Kester Ministries VZW  BE29 3631 6167 2364">💳 Bank Account: T.n.v. Esmee Kester Ministries VZW BE29 3631 6167 2364</p>
-    <p data-lang data-en="🏠 Address: Brugsken 58, 9100 Sint-Niklaas, Belgium" data-nl="🏠 Adres: Brugsken 58, 9100 Sint-Niklaas, België">🏠 Address: Brugsken 58, 9100 Sint-Niklaas, Belgium</p>
-</section>
-<!-- New Section: Opening Hours -->
-	<section class="mb-8">
-		<h4 class="text-xl title-color mb-4" data-lang data-en="Opening Hours" data-nl="Openingstijden">Opening Hours</h4>
-		<table class="w-full text-center mt-8 mb-8 border-collapse" style="border: 2px solid #FFA500;">
-			<thead class="bg-black text-white">
-				<tr>
-					<th class="p-2" data-lang data-en="Day" data-nl="Dag">Dag</th>
-					<th class="p-2" data-lang data-en="Opening Hours" data-nl="Openingstijden">Openingstijden</th>
-				</tr>
-			</thead>
-			<tbody class="bg-white dark:bg-black text-black dark:text-white">
-				<tr>
-					<td class="p-2 border-t border-b" style="border-color: #FFA500;" data-lang data-en="Monday & Wednesday" data-nl="Maandag & Woensdag">Monday & Wednesday</td>
-					<td class="p-2 border-t border-b" style="border-color: #FFA500;">13:00 - 18:00</td>
-				</tr>
-				<tr>
-					<td class="p-2 border-t border-b" style="border-color: #FFA500;" data-lang data-en="Friday" data-nl="Friday">Friday</td>
-					<td class="p-2 border-t border-b" style="border-color: #FFA500;">14:00 - 19:00</td>
-				</tr>
-				<tr>
-					<td class="p-2 border-t border-b" style="border-color: #FFA500;" data-lang data-en="Tuesday, Thursday, Saturday & Sunday" data-nl="Dinsdag, donderdag, Zaterdag & Zondag">Tuesday, Thursday, Saturday & Sunday</td>
-					<td class="p-2 border-t border-b" style="border-color: #FFA500;" data-lang data-en="Closed" data-nl="Gesloten">Closed</td>
-				</tr>
-			</tbody>
-		</table>
-	</section>    
-    <!-- Flyer Image at the end 
-    <div class="flex justify-center mt-8">
-        <img src="assets/flyer_en.jpg" alt="Flyer for opening" class="max-w-full h-auto">
-    </div> -->
-    <section class="mb-8">
-        <img src="assets/cal_feb_2025.jpeg" alt="Calendar February 2025" class="max-w-full h-auto mx-auto block">
-        <img src="assets/cal_maart_2025.jpeg" alt="Calendar March 2025" class="max-w-full h-auto mx-auto block mt-4">
-    </section>
-</main>
+    <!-- ── Hero ────────────────────────────────────────────────────── -->
+    <div id="top" class="page">
+        <div class="hero">
+            <img src="assets/logo.jpg" alt="De Inloop Logo" class="logo">
+            <h1 data-lang data-en="Your Support, Their Hope" data-nl="Jouw Steun, Hun Hoop">Your Support, Their Hope
+            </h1>
+            <p class="subtitle" data-lang data-en="Social Walk-In Center 'DE INLOOP' in Sint-Niklaas"
+                data-nl="Sociaal Inloophuis 'DE INLOOP' in Sint-Niklaas">Social Walk-In Center 'DE INLOOP' in
+                Sint-Niklaas</p>
+            <p class="tagline">"Extending a hand, touching a heart"</p>
+            <a href="#contact" class="cta-btn" data-lang data-en="Get Involved Today" data-nl="Doe Vandaag Mee">Get
+                Involved Today</a>
+        </div>
 
-        <footer class="bg-white dark:bg-black p-4">
-			<p class="text-center">"Every contribution… big or small, helps us to be a light in someone´s darkness."
-</p><p class="text-center">Copyright © De Inloop</p>
-			<div class="flex justify-center">
-				<a href="#" class="mx-2">Privacy Policy</a>
-				<a href="#" class="mx-2">Terms of Service</a>
-			</div>
-        </footer>
-    </div>
-    <script src="script.js" defer></script>
+        <!-- ── Mission ───────────────────────────────────────────────── -->
+        <div class="card" id="mission">
+            <h2><span class="icon">🤝</span> <span data-lang data-en="Our Mission" data-nl="Onze Missie">Our
+                    Mission</span></h2>
+            <p data-lang
+                data-en="We aim to be THE meeting place of Sint-Niklaas. Our walk-in center 'DE INLOOP' provides a home for all, especially for our fellow citizens in (risk of) impoverished situations. We not only offer a listening ear and social and societal advice, but also support in meeting basic necessities of life."
+                data-nl="Wij streven ernaar dé ontmoetingsplek van Sint-Niklaas te zijn. Ons inloophuis biedt een thuis aan allen, in het bijzonder voor onze medemensen in (kans)arme situaties. We bieden niet alleen een luisterend oor en sociaal-maatschappelijk advies, maar ook ondersteuning bij het voldoen aan primaire levensbehoeften.">
+                We aim to be THE meeting place of Sint-Niklaas. Our walk-in center 'DE INLOOP' provides a home for all,
+                especially for our fellow citizens in (risk of) impoverished situations. We not only offer a listening
+                ear and social and societal advice, but also support in meeting basic necessities of life.
+            </p>
+        </div>
+
+        <!-- ── Vision ───────────────────────────────────────────────── -->
+        <div class="card" id="vision">
+            <h2><span class="icon">🌟</span> <span data-lang data-en="Our Vision" data-nl="Onze Visie">Our Vision</span>
+            </h2>
+            <p data-lang
+                data-en="We envision the Social Walk-In Center 'DE INLOOP' as a primary incubator where respect and equality are central. Everyone is welcome here, regardless of belief, worldview, political inclination, race, gender, or any other basis. We aim to provide everyone who enters our doors with the tools and necessary support to independently and confidently discover and pursue their unique path in the world."
+                data-nl="Wij zien het Sociaal Inloophuis 'DE INLOOP' als een eerste broedplaats waar respect en gelijkheid centraal staan. Hier is iedereen welkom, ongeacht geloof, levensovertuiging, politieke gezindheid, ras, geslacht of welke grond dan ook. Wij willen iedereen die bij ons binnenkomt de hulpmiddelen en nodige steun bieden om zelfstandig en met geheven hoofd hun eigen unieke pad in de wereld te ontdekken en te volgen.">
+                We envision the Social Walk-In Center 'DE INLOOP' as a primary incubator where respect and equality are
+                central. Everyone is welcome here, regardless of belief, worldview, political inclination, race, gender,
+                or any other basis. We aim to provide everyone who enters our doors with the tools and necessary support
+                to independently and confidently discover and pursue their unique path in the world.
+            </p>
+        </div>
+
+        <!-- ── Goals ────────────────────────────────────────────────── -->
+        <div class="card" id="goals">
+            <h2><span class="icon">🎯</span> <span data-lang data-en="Our Goals" data-nl="Onze Doelen">Our Goals</span>
+            </h2>
+            <p data-lang
+                data-en="We strive to create a platform that supports individuals to unlock their full potential. We provide not only essential items such as clothes, household goods, toys, and food, but also strive to create opportunities for growth and development. Our giveaway shop and coffee/lunch corner are the foundations of this mission, but we go further."
+                data-nl="Wij streven ernaar een platform te creëren dat individuen ondersteunt om hun volledige potentieel te bereiken. We bieden niet alleen noodzakelijke middelen zoals kleding, huisraad, speelgoed en voedsel, maar zetten ons ook in om kansen te creëren voor groei en ontwikkeling. Onze weggeefwinkel en koffie-/lunchhoek zijn de fundamenten van deze missie, maar we gaan verder.">
+                We strive to create a platform that supports individuals to unlock their full potential. We provide not
+                only essential items such as clothes, household goods, toys, and food, but also strive to create
+                opportunities for growth and development. Our giveaway shop and coffee/lunch corner are the foundations
+                of this mission, but we go further.
+            </p>
+            <p data-lang
+                data-en="We offer educational and language support to kids, youth and adults, organize creative activities for children to develop their skills, and promote social interaction through singing, dancing, and sports activities. We also make our spaces available for a diverse range of purposes, from music groups to private events."
+                data-nl="We bieden onderwijs- en taalondersteuning aan kinderen, jongeren en volwassenen, organiseren creatieve activiteiten voor kinderen om hun vaardigheden te ontwikkelen en moedigen sociale interactie aan door middel van zang-, dans- en sportactiviteiten. We stellen onze ruimtes ook beschikbaar voor uiteenlopende doeleinden, van muziekgroepen tot privé-evenementen.">
+                We offer educational and language support to kids, youth and adults, organize creative activities for
+                children to develop their skills, and promote social interaction through singing, dancing, and sports
+                activities. We also make our spaces available for a diverse range of purposes, from music groups to
+                private events.
+            </p>
+        </div>
+
+        <!-- ── How You Can Help ─────────────────────────────────────── -->
+        <div class="card" id="help">
+            <h2><span class="icon">💛</span> <span data-lang data-en="How You Can Help" data-nl="Hoe U Kunt Helpen">How
+                    You Can Help</span></h2>
+            <p data-lang
+                data-en="We are a non-profit organization driven by the desire to be a beacon of hope. Every contribution — big or small — makes a real difference."
+                data-nl="Wij zijn een organisatie zonder winstoogmerk, gedreven door de wens om een lichtpunt te zijn. Elke bijdrage — groot of klein — maakt een echt verschil.">
+                We are a non-profit organization driven by the desire to be a beacon of hope. Every contribution — big
+                or small — makes a real difference.
+            </p>
+            <div class="help-grid">
+                <div class="help-item">
+                    <span class="help-icon">💰</span>
+                    <strong data-lang data-en="Financial Contribution" data-nl="Financiële Bijdrage">Financial
+                        Contribution</strong>
+                    <p data-lang data-en="Support our projects with a financial donation."
+                        data-nl="Ondersteun onze projecten met een financiële gift.">Support our projects with a
+                        financial donation.</p>
+                </div>
+                <div class="help-item">
+                    <span class="help-icon">🤝</span>
+                    <strong data-lang data-en="Volunteer" data-nl="Vrijwilligerswerk">Volunteer</strong>
+                    <p data-lang data-en="Join our team and contribute your time and skills."
+                        data-nl="Sluit u aan bij ons team en draag bij met uw tijd en vaardigheden.">Join our team and
+                        contribute your time and skills.</p>
+                </div>
+                <div class="help-item">
+                    <span class="help-icon">📦</span>
+                    <strong data-lang data-en="Donate Goods" data-nl="Goederen Doneren">Donate Goods</strong>
+                    <p data-lang data-en="Provide items in good condition for our giveaway shop."
+                        data-nl="Lever items in goede staat in voor onze weggeefwinkel.">Provide items in good condition
+                        for our giveaway shop.</p>
+                </div>
+                <div class="help-item">
+                    <span class="help-icon">📣</span>
+                    <strong data-lang data-en="Share Our Story" data-nl="Deel Ons Verhaal">Share Our Story</strong>
+                    <p data-lang data-en="Help expand our reach by sharing us with your network."
+                        data-nl="Help ons bereik te vergroten door ons te delen binnen uw netwerk.">Help expand our
+                        reach by sharing us with your network.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Contact ──────────────────────────────────────────────── -->
+        <div class="contact-strip" id="contact">
+            <h2 data-lang data-en="Get Involved Today" data-nl="Doe Vandaag Nog Mee">Get Involved Today</h2>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <span class="ci-icon">📧</span>
+                    <div>
+                        <span class="ci-label" data-lang data-en="Email" data-nl="E-mail">Email</span>
+                        <span class="ci-value">info@deinloop.eu</span>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span class="ci-icon">📞</span>
+                    <div>
+                        <span class="ci-label" data-lang data-en="Phone" data-nl="Telefoon">Phone</span>
+                        <span class="ci-value">+32 487 127 770</span>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span class="ci-icon">💳</span>
+                    <div>
+                        <span class="ci-label" data-lang data-en="Bank Account" data-nl="Bankrekening">Bank
+                            Account</span>
+                        <span class="ci-value">BE29 3631 6167 2364<br><small>T.n.v. Esmee Kester Ministries
+                                VZW</small></span>
+                    </div>
+                </div>
+                <div class="contact-item">
+                    <span class="ci-icon">📍</span>
+                    <div>
+                        <span class="ci-label" data-lang data-en="Address" data-nl="Adres">Address</span>
+                        <span class="ci-value">Brugsken 58, 9100 Sint-Niklaas</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Opening Hours ────────────────────────────────────────── -->
+        <div class="card" id="hours">
+            <h2><span class="icon">🕐</span> <span data-lang data-en="Opening Hours" data-nl="Openingstijden">Opening
+                    Hours</span></h2>
+            <table class="hours-table">
+                <thead>
+                    <tr>
+                        <th data-lang data-en="Day" data-nl="Dag">Day</th>
+                        <th data-lang data-en="Hours" data-nl="Uren">Hours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td data-lang data-en="Monday &amp; Wednesday" data-nl="Maandag &amp; Woensdag">Monday &amp;
+                            Wednesday</td>
+                        <td>13:00 – 18:00</td>
+                    </tr>
+                    <tr>
+                        <td data-lang data-en="Friday" data-nl="Vrijdag">Friday</td>
+                        <td>14:00 – 19:00</td>
+                    </tr>
+                    <tr>
+                        <td data-lang data-en="Tuesday, Thursday, Saturday &amp; Sunday"
+                            data-nl="Dinsdag, Donderdag, Zaterdag &amp; Zondag">Tuesday, Thursday, Saturday &amp; Sunday
+                        </td>
+                        <td class="closed" data-lang data-en="Closed" data-nl="Gesloten">Closed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ── Calendar images ──────────────────────────────────────── -->
+        <div class="calendar-section">
+            <h2><span>📅</span> <span data-lang data-en="Agenda" data-nl="Agenda">Agenda</span></h2>
+            <div class="calendar-grid">
+                <img src="assets/cal_feb_2025.jpeg" alt="Calendar February 2025">
+                <img src="assets/cal_maart_2025.jpeg" alt="Calendar March 2025">
+            </div>
+        </div>
+
+    </div><!-- /.page -->
+
+    <!-- ── Footer ──────────────────────────────────────────────────── -->
+    <footer>
+        <p class="footer-quote">"Every contribution… big or small, helps us to be a light in someone's darkness."</p>
+        <p class="footer-copy">Copyright © De Inloop</p>
+        <div class="footer-links">
+            <a href="#" data-lang data-en="Privacy Policy" data-nl="Privacybeleid">Privacy Policy</a>
+            <a href="#" data-lang data-en="Terms of Service" data-nl="Gebruiksvoorwaarden">Terms of Service</a>
+        </div>
+    </footer>
+
+    <script>
+        function changeLanguage(lang) {
+            document.querySelectorAll('[data-lang]').forEach(el => {
+                const val = el.getAttribute('data-' + lang);
+                if (val !== null) el.textContent = val;
+            });
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            document.getElementById('btn-nl').classList.toggle('active', lang === 'nl');
+        }
+    </script>
 </body>
+
 </html>
