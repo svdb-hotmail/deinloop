@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DE INLOOP — Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FFA500;
+            --orange-dark: #e08c00;
+            --dark: #1a1a1a;
+            --mid: #444;
+            --muted: #888;
+            --border: #e8e8e8;
+            --bg: #f5f5f0;
+            --white: #ffffff;
+            --red: #e53e3e;
+            --green: #38a169;
+            --radius: 12px;
+            --shadow: 0 2px 16px rgba(0, 0, 0, .07);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--dark);
+            font-size: 15px;
+        }
+
+        /* ── Login ────────────────────────────────────────── */
+        #loginScreen {
+            min-height: 100svh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, .12);
+            padding: 2.5rem 1.5rem;
+            width: 100%;
+            max-width: 380px;
+            text-align: center;
+        }
+
+        .login-card .lock {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-card h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: .25rem;
+        }
+
+        .login-card h1 span {
+            color: var(--orange);
+        }
+
+        .login-card .sub {
+            color: var(--muted);
+            font-size: .85rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Biometric button */
+        .btn-biometric {
+            background: #000;
+            color: #fff;
+            width: 100%;
+            justify-content: center;
+            font-size: 1rem;
+            padding: .75rem 1.2rem;
+            border-radius: 10px;
+            margin-bottom: .75rem;
+            gap: .5rem;
+        }
+
+        .btn-biometric:hover {
+            background: #222;
+        }
+
+        .btn-biometric svg {
+            flex-shrink: 0;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            color: var(--muted);
+            font-size: .8rem;
+            margin: .75rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .login-err {
+            color: var(--red);
+            font-size: .85rem;
+            margin-top: .75rem;
+            min-height: 1.2em;
+        }
+
+        /* Enable biometrics prompt (shown after password login) */
+        .biometric-prompt {
+            display: none;
+            background: #f0f9ff;
+            border: 1.5px solid #bee3f8;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        .biometric-prompt p {
+            font-size: .85rem;
+            color: var(--mid);
+            margin-bottom: .75rem;
+        }
+
+        .biometric-prompt p strong {
+            color: var(--dark);
+        }
+
+
+        /* ── Admin nav ──────────────────────────────────────────── */
+        .admin-nav {
+            background: var(--white);
+            border-bottom: 3px solid var(--orange);
+            padding: .8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
+        }
+
+        .admin-nav .brand {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .admin-nav .brand span {
+            color: var(--orange);
+        }
+
+        .admin-nav .tag {
+            background: var(--orange);
+            color: #fff;
+            font-size: .7rem;
+            font-weight: 700;
+            padding: .15rem .45rem;
+            border-radius: 4px;
+            letter-spacing: .05em;
+            vertical-align: middle;
+            margin-left: .4rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+
+        .conn-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            display: inline-block;
+            transition: background .3s;
+        }
+
+        .conn-dot.ok {
+            background: var(--green);
+        }
+
+        .conn-dot.err {
+            background: var(--red);
+        }
+
+        /* ── Settings panel (collapsible) ───────────────────────── */
+        .settings-panel {
+            background: #fffbf2;
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height .35s ease;
+        }
+
+        .settings-panel.open {
+            max-height: 400px;
+        }
+
+        .settings-panel-inner {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 1.25rem 1.25rem 1.5rem;
+        }
+
+        /* ── Body layout ────────────────────────────────────────── */
+        .admin-body {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 1.75rem 1.25rem 4rem;
+        }
+
+        /* ── Cards ──────────────────────────────────────────────── */
+        .section-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.75rem 2rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--orange);
+        }
+
+        .section-card h2 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        /* ── Forms ──────────────────────────────────────────────── */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--mid);
+            margin-bottom: .35rem;
+        }
+
+        .form-group label a {
+            color: var(--orange);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: .55rem .8rem;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: .9rem;
+            color: var(--dark);
+            transition: border-color .2s;
+            background: var(--white);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--orange);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: .75rem;
+        }
+
+        /* ── Buttons ────────────────────────────────────────────── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            padding: .55rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: .875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s, transform .1s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: var(--orange);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--orange-dark);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: var(--mid);
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #fff0f0;
+            color: var(--red);
+        }
+
+        .btn-danger:hover {
+            background: var(--red);
+            color: #fff;
+        }
+
+        .btn-sm {
+            padding: .3rem .7rem;
+            font-size: .8rem;
+            border-radius: 6px;
+        }
+
+        .btn-logout {
+            background: #f5f5f0;
+            color: var(--mid);
+            border: 1.5px solid var(--border);
+        }
+
+        /* ── Upload zone ────────────────────────────────────────── */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            padding: 1.75rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .2s, background .2s;
+            margin-bottom: 1.25rem;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--orange);
+            background: #fffbf0;
+        }
+
+        .upload-zone .uz-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: .5rem;
+        }
+
+        .upload-zone .uz-label {
+            font-weight: 600;
+            color: var(--mid);
+            display: block;
+        }
+
+        .upload-zone small {
+            color: var(--muted);
+            font-size: .78rem;
+        }
+
+        /* ── Photo / Cal grid ───────────────────────────────────── */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+
+        .photo-item {
+            background: var(--bg);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1.5px solid var(--border);
+        }
+
+        .photo-item img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            display: block;
+            background: #eee;
+        }
+
+        .photo-meta {
+            padding: .5rem .65rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: .5rem;
+        }
+
+        .photo-name {
+            font-size: .75rem;
+            color: var(--muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .empty-state {
+            color: var(--muted);
+            font-size: .9rem;
+            padding: .5rem 0;
+        }
+
+        /* ── Hours editor ───────────────────────────────────────── */
+        .hours-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 36px;
+            gap: .5rem;
+            font-size: .75rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            padding-bottom: .5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: .5rem;
+        }
+
+        .hours-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 36px;
+            gap: .5rem;
+            align-items: center;
+            margin-bottom: .5rem;
+        }
+
+        .hours-actions {
+            display: flex;
+            gap: .75rem;
+            margin-top: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* ── Toast ──────────────────────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--dark);
+            color: #fff;
+            padding: .7rem 1.1rem;
+            border-radius: 8px;
+            font-size: .85rem;
+            font-weight: 500;
+            transform: translateY(6px);
+            opacity: 0;
+            transition: all .3s;
+            z-index: 999;
+            max-width: 320px;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--green);
+        }
+
+        .toast.error {
+            background: var(--red);
+        }
+
+        .toast.warn {
+            background: #b7791f;
+        }
+
+        /* ── Mobile ────────────────────────────────────────── */
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .hours-row,
+            .hours-header {
+                grid-template-columns: 1fr 36px;
+            }
+
+            .hours-row .nl-col,
+            .hours-header .nl-lbl {
+                display: none;
+            }
+
+            /* Bigger touch targets on mobile */
+            .form-control {
+                font-size: 16px;
+                /* prevents iOS zoom */
+                padding: .75rem .9rem;
+            }
+
+            .btn {
+                padding: .7rem 1.2rem;
+                min-height: 44px;
+            }
+
+            .btn-sm {
+                padding: .5rem .85rem;
+                min-height: 40px;
+            }
+
+            .upload-zone {
+                padding: 2.25rem 1rem;
+            }
+
+            .upload-zone .uz-icon {
+                font-size: 2.5rem;
+            }
+
+            /* Single-column photo grid on small screens */
+            .photo-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            /* Admin body padding */
+            .admin-body {
+                padding: 1rem .75rem 5rem;
+            }
+
+            .section-card {
+                padding: 1.25rem 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── Login ───────────────────────────────────────────── -->
+    <div id="loginScreen">
+        <div class="login-card">
+            <div class="lock">&#x1F510;</div>
+            <h1>DE <span>INLOOP</span> Admin</h1>
+            <p class="sub">Website management panel</p>
+
+            <!-- Biometric login button (hidden until a passkey is registered) -->
+            <button class="btn btn-biometric" id="biometricBtn" onclick="biometricLogin()" style="display:none">
+                <!-- Face ID icon -->
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M9 2H4a2 2 0 0 0-2 2v5M9 22H4a2 2 0 0 1-2-2v-5M22 9V4a2 2 0 0 0-2-2h-5M22 15v5a2 2 0 0 1-2 2h-5" />
+                    <circle cx="12" cy="10" r="1" />
+                    <line x1="12" y1="14" x2="12" y2="16" />
+                    <path d="M8 8s1-1 4-1 4 1 4 1" />
+                    <path d="M8 12s1 2 4 2 4-2 4-2" />
+                </svg>
+                Sign In with Face ID / Touch ID
+            </button>
+
+            <div class="divider" id="loginDivider" style="display:none">or use password</div>
+
+            <div class="form-group">
+                <input class="form-control" type="password" id="passwordInput" placeholder="Password"
+                    autocomplete="current-password">
+            </div>
+            <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="login()">Sign In</button>
+            <p class="login-err" id="loginErr"></p>
+
+            <!-- Shown after first password login if WebAuthn is supported -->
+            <div class="biometric-prompt" id="biometricPrompt">
+                <p><strong>Enable Face ID / Touch ID?</strong><br>Next time you can log in with just your face or
+                    fingerprint.</p>
+                <button class="btn btn-primary" style="width:100%;justify-content:center"
+                    onclick="registerBiometric()">Enable Biometrics</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Admin Panel ─────────────────────────────────────────────── -->
+    <div id="adminPanel" style="display:none">
+        <nav class="admin-nav">
+            <span class="brand">DE <span>INLOOP</span><span class="tag">ADMIN</span></span>
+            <div class="nav-right">
+                <button class="btn btn-logout btn-sm" onclick="logout()">← Logout</button>
+            </div>
+        </nav>
+
+        <!-- Collapsible GitHub Settings removed: credentials are baked into the CONFIG block -->
+
+        <div id="toast" class="toast"></div><!-- toast container (#17) -->
+        <div class="admin-body"><!-- admin-body wrapper (#12) -->
+
+            <!-- Gallery -->
+            <div class="section-card">
+                <h2>📸 Gallery Photos</h2>
+                <div class="upload-zone" onclick="document.getElementById('galleryInput').click()">
+                    <span class="uz-icon">🖼️</span>
+                    <span class="uz-label">Click to upload photos</span>
+                    <small>JPG, PNG, WebP — multiple files allowed</small>
+                </div>
+                <input type="file" id="galleryInput" accept="image/*" multiple style="display:none"
+                    onchange="uploadPhotos(this.files)">
+                <div class="photo-grid" id="galleryGrid">
+                    <p class="empty-state">Load config first ↑</p>
+                </div>
+            </div>
+
+            <!-- Opening Hours -->
+            <div class="section-card">
+                <h2>🕐 Opening Hours</h2>
+                <div class="hours-header">
+                    <span>Day (English)</span>
+                    <span class="nl-lbl">Day (Dutch)</span>
+                    <span>Hours / Closed</span>
+                    <span></span>
+                </div>
+                <div id="hoursRows"></div>
+                <div class="hours-actions">
+                    <button class="btn btn-secondary" onclick="addHourRow()">+ Add Row</button>
+                    <button class="btn btn-primary" onclick="saveHours()">💾 Save Hours</button>
+                </div>
+            </div>
+
+            <!-- Calendars -->
+            <div class="section-card">
+                <h2>📅 Calendars</h2>
+                <div class="upload-zone" onclick="document.getElementById('calInput').click()">
+                    <span class="uz-icon">📆</span>
+                    <span class="uz-label">Upload calendar image</span>
+                    <small>JPG or PNG — saved to assets/</small>
+                </div>
+                <input type="file" id="calInput" accept="image/*" style="display:none"
+                    onchange="uploadCalendar(this.files[0])">
+                <div class="photo-grid" id="calGrid">
+                    <p class="empty-state">Load config first ↑</p>
+                </div>
+            </div>
+
+        </div><!-- /.admin-body -->
+    </div><!-- /#adminPanel -->
+
+    <script>
+        /* ================================================================
+         *  CONFIG — only the Worker URL goes here.
+         *  The admin password is entered at login and validated server-side
+         *  by the Cloudflare Worker. It is never stored in this file.
+         * ================================================================ */
+        const CONFIG = {
+            workerUrl: 'https://deinloop-admin.samuel-vandenbergh.workers.dev'  // Cloudflare Worker
+        };
+        /* ================================================================ */
+
+        /* Runtime password — set after successful Worker auth, tab-only */
+        const PW_KEY = 'di_admin_pw';
+        function getStoredPw() { return sessionStorage.getItem(PW_KEY) || localStorage.getItem(PW_KEY) || ''; }
+
+        /* ── State ─────────────────────────────────────────────────── */
+        let config = null;
+        let configSha = null;
+
+
+        /* ── Toast ────────────────────────────────────────────────── */
+        let _toastTimer;
+        function toast(msg, type = 'info') {
+            const el = document.getElementById('toast');
+            if (!el) return; // guard: element may not exist yet
+            el.textContent = msg;
+            el.className = 'toast show ' + type;
+            clearTimeout(_toastTimer);
+            _toastTimer = setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        /* ── Auth ──────────────────────────────────────────────── */
+        const WEBAUTHN_RP = location.hostname || 'localhost';
+        const CRED_KEY = 'di_passkey_id';
+
+        function supportsWebAuthn() {
+            return location.protocol === 'https:' &&
+                typeof PublicKeyCredential !== 'undefined' &&
+                typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function';
+        }
+
+        async function passkeyAvailable() {
+            if (!supportsWebAuthn()) return false;
+            const has = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+            return has && !!localStorage.getItem(CRED_KEY);
+        }
+
+        /* Show biometric button if passkey is registered */
+        async function initLoginScreen() {
+            if (await passkeyAvailable()) {
+                document.getElementById('biometricBtn').style.display = 'flex';
+                document.getElementById('loginDivider').style.display = 'flex';
+                // Auto-prompt biometrics after brief delay
+                setTimeout(biometricLogin, 400);
+            }
+        }
+
+        async function biometricLogin() {
+            const raw = localStorage.getItem(CRED_KEY);
+            if (!raw) return;
+            try {
+                const challenge = crypto.getRandomValues(new Uint8Array(32));
+                const credId = new Uint8Array([...atob(raw)].map(c => c.charCodeAt(0)));
+                const cred = await navigator.credentials.get({
+                    publicKey: {
+                        challenge,
+                        rpId: WEBAUTHN_RP,
+                        allowCredentials: [{ type: 'public-key', id: credId, transports: ['internal'] }],
+                        userVerification: 'required',
+                        timeout: 60000
+                    }
+                });
+                if (cred) {
+                    // Restore password from localStorage so Worker calls work after biometric login
+                    const storedPw = localStorage.getItem(PW_KEY);
+                    if (storedPw) sessionStorage.setItem(PW_KEY, storedPw);
+                    doLogin();
+                }
+            } catch (e) {
+                // User cancelled or failed — fall back to password silently
+                if (e.name !== 'NotAllowedError') {
+                    document.getElementById('loginErr').textContent = 'Biometrics failed — use password.';
+                }
+            }
+        }
+
+        async function registerBiometric() {
+            if (!supportsWebAuthn()) {
+                toast('Face ID / Touch ID is only available on HTTPS (the live site).', 'warn');
+                return;
+            }
+            try {
+                const challenge = crypto.getRandomValues(new Uint8Array(32));
+                const userId = crypto.getRandomValues(new Uint8Array(16));
+                const cred = await navigator.credentials.create({
+                    publicKey: {
+                        challenge,
+                        rp: { name: 'DE INLOOP Admin', id: WEBAUTHN_RP },
+                        user: { id: userId, name: 'admin', displayName: 'Admin' },
+                        pubKeyCredParams: [{ alg: -7, type: 'public-key' }],
+                        authenticatorSelection: {
+                            authenticatorAttachment: 'platform',
+                            requireResidentKey: true,
+                            userVerification: 'required'
+                        },
+                        timeout: 60000
+                    }
+                });
+                // Store credential ID (base64) for future biometric use
+                const id64 = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+                localStorage.setItem(CRED_KEY, id64);
+                // Also persist password in localStorage so biometric login can restore it
+                localStorage.setItem(PW_KEY, getStoredPw());
+                document.getElementById('biometricPrompt').style.display = 'none';
+                toast('Face ID / Touch ID enabled! 👍 Next login will use biometrics.', 'success');
+            } catch (e) {
+                toast('Could not enable biometrics: ' + e.message, 'error');
+            }
+        }
+
+        function doLogin() {
+            sessionStorage.setItem('di_auth', '1');
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            initAdmin();
+        }
+
+        async function login() {
+            const pw = document.getElementById('passwordInput').value.trim();
+            if (!pw) return;
+            // Validate against Worker (avoids ever storing the password in source code)
+            document.getElementById('loginErr').textContent = '';
+            try {
+                const res = await fetch(`${CONFIG.workerUrl}/config`, {
+                    headers: { 'Authorization': `Bearer ${pw}` }
+                });
+                if (res.status === 401) {
+                    document.getElementById('loginErr').textContent = 'Incorrect password.';
+                    document.getElementById('passwordInput').value = '';
+                    return;
+                }
+                // Password accepted — store for this session's Worker calls
+                sessionStorage.setItem(PW_KEY, pw);
+                doLogin();
+                if (supportsWebAuthn() && !localStorage.getItem(CRED_KEY)) {
+                    PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(has => {
+                        if (has) document.getElementById('biometricPrompt').style.display = 'block';
+                    });
+                }
+            } catch {
+                document.getElementById('loginErr').textContent = 'Could not reach server. Check your connection.';
+            }
+        }
+        function logout() {
+            sessionStorage.removeItem('di_auth');
+            sessionStorage.removeItem(PW_KEY);
+            location.reload();
+        }
+
+        /* Check session still valid on load */
+        if (sessionStorage.getItem('di_auth') === '1') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+        } else {
+            initLoginScreen();
+            // Dismiss login on Enter key
+            document.getElementById('passwordInput').addEventListener('keydown', e => {
+                if (e.key === 'Enter') login();
+            });
+        }
+
+        /* ── Worker API helpers ────────────────────────────────────── */
+        function wHeaders() {
+            return {
+                'Authorization': `Bearer ${getStoredPw()}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        async function wGet(path) {
+            const res = await fetch(`${CONFIG.workerUrl}/${path}`, { headers: wHeaders() });
+            if (!res.ok) throw new Error(`GET failed (${res.status})`);
+            return res.json();
+        }
+        async function wPut(filePath, b64, message, sha = null) {
+            const body = { path: filePath, content: b64, message };
+            if (sha) body.sha = sha;
+            const res = await fetch(`${CONFIG.workerUrl}/file`, {
+                method: 'PUT',
+                headers: wHeaders(),
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || `PUT failed (${res.status})`);
+            return data;
+        }
+        async function wDelete(filePath, sha, message) {
+            const res = await fetch(`${CONFIG.workerUrl}/file`, {
+                method: 'DELETE',
+                headers: wHeaders(),
+                body: JSON.stringify({ path: filePath, sha, message })
+            });
+            if (res.status === 204) return;
+            if (!res.ok) { const d = await res.json(); throw new Error(d.message || `DELETE failed (${res.status})`); }
+        }
+        async function wGetFile(filePath) {
+            const res = await fetch(
+                `${CONFIG.workerUrl}/list?path=${encodeURIComponent(filePath)}`,
+                { headers: wHeaders() }
+            );
+            if (!res.ok) throw new Error(`GET failed (${res.status})`);
+            const data = await res.json();
+            // Returns array (dir listing) or single file object
+            if (Array.isArray(data)) throw new Error('Expected file, got directory');
+            return data;
+        }
+
+
+        /* ── Config ───────────────────────────────────────────────── */
+        const DEFAULT_CONFIG = {
+            openingHours: [
+                { days_en: 'Monday & Wednesday', days_nl: 'Maandag & Woensdag', hours: '13:00 \u2013 18:00' },
+                { days_en: 'Friday', days_nl: 'Vrijdag', hours: '14:00 \u2013 19:00' },
+                { days_en: 'Tuesday, Thursday, Saturday & Sunday', days_nl: 'Dinsdag, Donderdag, Zaterdag & Zondag', hours: 'Closed' }
+            ],
+            gallery: [],
+            calendars: ['cal_feb_2025.jpeg', 'cal_maart_2025.jpeg']
+        };
+
+        /* Decode base64-encoded UTF-8 bytes from GitHub API correctly (#179) */
+        function decodeBase64Utf8(b64) {
+            const clean = b64.replace(/\s/g, '');
+            const binary = atob(clean);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return new TextDecoder('utf-8').decode(bytes);
+        }
+
+        async function loadConfig() {
+            toast('Loading…', 'info');
+            try {
+                const file = await wGet('config');
+                configSha = file.sha;
+                config = JSON.parse(decodeBase64Utf8(file.content));
+                toast('Config loaded ✓', 'success');
+            } catch (e) {
+                config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+                configSha = null;
+                // setConnected(false); // Removed
+                toast('Could not load config — using defaults.', 'warn');
+            }
+            renderAll();
+        }
+
+        async function saveConfig(msg) {
+            // TextEncoder → base64 (replaces deprecated unescape trick, #8)
+            const json = JSON.stringify(config, null, 2);
+            const bytes = new TextEncoder().encode(json);
+            const b64 = btoa(String.fromCharCode(...bytes));
+            const res = await wPut('assets/config.json', b64, msg, configSha);
+            configSha = res.content.sha;
+        }
+
+        /* Validate filename: allow only safe FS-safe chars (#15, #18) */
+        function isSafe(name) {
+            return typeof name === 'string' && /^[a-zA-Z0-9._-]+$/.test(name);
+        }
+        function normalizeFilename(name) {
+            let base = String(name || '').split(/[\\/]/).pop();
+            base = base.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 100);
+            return base || 'file';
+        }
+
+        function renderGallery() {
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '';
+            if (!config.gallery.length) {
+                grid.innerHTML = '<p class="empty-state">No photos yet — upload some above!</p>';
+                return;
+            }
+            config.gallery.forEach(f => {
+                if (!isSafe(f)) return;
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+
+                const img = document.createElement('img');
+                img.src = `assets/gallery/${encodeURIComponent(f)}`;
+                img.alt = f;
+                img.onerror = () => { img.style.background = '#eee'; };
+
+                const meta = document.createElement('div');
+                meta.className = 'photo-meta';
+                const nm = document.createElement('span');
+                nm.className = 'photo-name';
+                nm.title = f;
+                nm.textContent = f;
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-danger btn-sm';
+                btn.textContent = '🗑';
+                btn.addEventListener('click', () => deletePhoto(f)); // (#6)
+
+                meta.append(nm, btn);
+                item.append(img, meta);
+                grid.appendChild(item);
+            });
+        }
+
+        async function uploadPhotos(files) {
+            for (const file of Array.from(files)) {
+                const safeName = normalizeFilename(file.name); // (#18)
+                toast(`Uploading ${file.name}…`, 'info');
+                try {
+                    const b64 = await toBase64(file);
+                    const path = `assets/gallery/${safeName}`;
+                    let sha = null;
+                    try { const ex = await wGetFile(path); sha = ex.sha; } catch { }
+                    await wPut(path, b64, `Add gallery photo: ${file.name}`, sha);
+                    if (!config.gallery.includes(safeName)) config.gallery.push(safeName);
+                    await saveConfig(`Add gallery photo: ${file.name}`);
+                    toast(`${file.name} uploaded ✓  — site updates in ~30s`, 'success');
+                } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+            }
+            document.getElementById('galleryInput').value = '';
+            renderGallery();
+        }
+
+        async function deletePhoto(filename) {
+            if (!confirm(`Delete "${filename}" from the gallery?`)) return;
+            toast(`Deleting ${filename}…`, 'info');
+            try {
+                const file = await wGetFile(`assets/gallery/${filename}`);
+                await wDelete(`assets/gallery/${filename}`, file.sha, `Remove gallery photo: ${filename}`);
+                config.gallery = config.gallery.filter(f => f !== filename);
+                await saveConfig(`Remove gallery photo: ${filename}`);
+                toast(`${filename} deleted ✓`, 'success');
+                renderGallery();
+            } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+        }
+
+        /* ── Opening Hours ────────────────────────────────────────── */
+        function renderHours() {
+            document.getElementById('hoursRows').innerHTML = config.openingHours.map((row, i) => `
+            <div class="hours-row">
+                <input class="form-control" type="text" value="${esc(row.days_en)}"
+                       placeholder="Day (English)" onchange="config.openingHours[${i}].days_en=this.value">
+                <input class="form-control nl-col" type="text" value="${esc(row.days_nl)}"
+                       placeholder="Dag (NL)" onchange="config.openingHours[${i}].days_nl=this.value">
+                <input class="form-control" type="text" value="${esc(row.hours)}"
+                       placeholder="13:00 – 18:00 or Closed" onchange="config.openingHours[${i}].hours=this.value">
+                <button class="btn btn-danger btn-sm" onclick="removeHourRow(${i})">×</button>
+            </div>`).join('');
+        }
+        function addHourRow() {
+            config.openingHours.push({ days_en: '', days_nl: '', hours: '' });
+            renderHours();
+        }
+        function removeHourRow(i) { config.openingHours.splice(i, 1); renderHours(); }
+
+        async function saveHours() {
+            // Read current input values before saving
+            document.querySelectorAll('#hoursRows .hours-row').forEach((row, i) => {
+                const inputs = row.querySelectorAll('input');
+                if (config.openingHours[i]) {
+                    config.openingHours[i].days_en = inputs[0].value;
+                    config.openingHours[i].days_nl = inputs[1].value;
+                    config.openingHours[i].hours = inputs[2].value;
+                }
+            });
+            toast('Saving hours…', 'info');
+            try {
+                await saveConfig('Update opening hours');
+                toast('Opening hours saved ✓  — site updates in ~30s', 'success');
+            } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+        }
+
+        /* ── Calendars ────────────────────────────────────────────── */
+        function renderCalendars() {
+            const grid = document.getElementById('calGrid');
+            grid.innerHTML = '';
+            if (!config.calendars.length) {
+                grid.innerHTML = '<p class="empty-state">No calendars — upload one above!</p>';
+                return;
+            }
+            config.calendars.forEach(f => {
+                if (!isSafe(f)) return; // (#26)
+                const item = document.createElement('div');
+                item.className = 'photo-item';
+                const img = document.createElement('img');
+                img.src = `assets/${encodeURIComponent(f)}`;
+                img.alt = f;
+                img.onerror = () => { img.style.background = '#eee'; };
+                const meta = document.createElement('div');
+                meta.className = 'photo-meta';
+                const nm = document.createElement('span');
+                nm.className = 'photo-name'; nm.title = f; nm.textContent = f;
+                const btn = document.createElement('button');
+                btn.className = 'btn btn-danger btn-sm';
+                btn.textContent = '🗑';
+                btn.addEventListener('click', () => deleteCal(f)); // (#9)
+                meta.append(nm, btn);
+                item.append(img, meta);
+                grid.appendChild(item);
+            });
+        }
+
+        async function uploadCalendar(file) {
+            if (!file) return;
+            const safeName = normalizeFilename(file.name); // (#427)
+            if (!isSafe(safeName)) {
+                toast('Filename not allowed. Please rename the file.', 'error');
+                document.getElementById('calInput').value = '';
+                return;
+            }
+            toast(`Uploading ${file.name}…`, 'info');
+            try {
+                const b64 = await toBase64(file);
+                const path = `assets/${safeName}`;
+                let sha = null;
+                try { const ex = await wGetFile(path); sha = ex.sha; } catch { }
+                await wPut(path, b64, `Upload calendar: ${file.name}`, sha);
+                if (!config.calendars.includes(safeName)) config.calendars.push(safeName);
+                await saveConfig(`Add calendar: ${file.name}`);
+                toast(`${file.name} uploaded ✓  — site updates in ~30s`, 'success');
+                renderCalendars();
+            } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+            document.getElementById('calInput').value = '';
+        }
+
+        async function deleteCal(filename) {
+            if (!confirm(`Delete calendar "${filename}"?`)) return;
+            toast(`Deleting ${filename}…`, 'info');
+            try {
+                const file = await wGetFile(`assets/${filename}`);
+                await wDelete(`assets/${filename}`, file.sha, `Remove calendar: ${filename}`);
+                config.calendars = config.calendars.filter(f => f !== filename);
+                await saveConfig(`Remove calendar: ${filename}`);
+                toast(`${filename} deleted ✓`, 'success');
+                renderCalendars();
+            } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+        }
+
+        /* ── GitHub settings ──────────────────────────────────────── */
+        // Removed: function saveGhSettings() { ... }
+
+        /* ── Utilities ────────────────────────────────────────────── */
+        function toBase64(file) {
+            return new Promise((res, rej) => {
+                const r = new FileReader();
+                r.onload = () => res(r.result.split(',')[1]);
+                r.onerror = rej;
+                r.readAsDataURL(file);
+            });
+        }
+        function esc(s) {
+            return String(s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        /* ── Render all ───────────────────────────────────────────── */
+        function renderAll() { renderGallery(); renderHours(); renderCalendars(); }
+
+        /* ── Settings toggle ───────────────────────────────────── */
+        // Removed: function toggleSettings() { ... }
+        // Removed: function setConnected(ok) { ... }
+
+        /* ── Init (credentials come from CONFIG block, not localStorage) ── */
+        function initAdmin() {
+            // Credentials live in Cloudflare Worker Secrets — just load config (#23)
+            loadConfig();
+        }
+
+        // Restore session
+        if (sessionStorage.getItem('di_auth') === '1') {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            initAdmin();
+        }
+
+        // Enter key on password field
+        document.getElementById('passwordInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') login();
+        });
+    </script>
+</body>
+
+</html>
