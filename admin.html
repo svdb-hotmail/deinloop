@@ -453,6 +453,18 @@
             gap: .75rem;
             margin-top: 1rem;
             justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* Per-field label inside hours rows — hidden on desktop, shown on mobile */
+        .row-label {
+            display: none;
+            font-size: .72rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: .2rem;
         }
 
         /* ── Toast ──────────────────────────────────────────────── */
@@ -497,14 +509,33 @@
                 grid-template-columns: 1fr;
             }
 
-            .hours-row,
+            /* Hours editor: card layout with stacked labeled inputs */
             .hours-header {
-                grid-template-columns: 1fr 36px;
+                display: none;
             }
 
-            .hours-row .nl-col,
-            .hours-header .nl-lbl {
-                display: none;
+            .hours-row {
+                display: flex;
+                flex-direction: column;
+                gap: .5rem;
+                background: var(--bg);
+                border: 1.5px solid var(--border);
+                border-radius: 10px;
+                padding: .85rem;
+                margin-bottom: .75rem;
+            }
+
+            .row-label {
+                display: block;
+            }
+
+            /* NL column visible on mobile (was hidden in old grid) */
+            .nl-col {
+                display: flex !important;
+            }
+
+            .del-btn {
+                align-self: flex-end;
             }
 
             /* Bigger touch targets on mobile */
@@ -544,6 +575,16 @@
 
             .section-card {
                 padding: 1.25rem 1rem;
+            }
+
+            /* Hours actions: full-width buttons stacked */
+            .hours-actions {
+                flex-direction: column;
+            }
+
+            .hours-actions .btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -998,13 +1039,22 @@
         function renderHours() {
             document.getElementById('hoursRows').innerHTML = config.openingHours.map((row, i) => `
             <div class="hours-row">
-                <input class="form-control" type="text" value="${esc(row.days_en)}"
-                       placeholder="Day (English)" onchange="config.openingHours[${i}].days_en=this.value">
-                <input class="form-control nl-col" type="text" value="${esc(row.days_nl)}"
-                       placeholder="Dag (NL)" onchange="config.openingHours[${i}].days_nl=this.value">
-                <input class="form-control" type="text" value="${esc(row.hours)}"
-                       placeholder="13:00 – 18:00 or Closed" onchange="config.openingHours[${i}].hours=this.value">
-                <button class="btn btn-danger btn-sm" onclick="removeHourRow(${i})">×</button>
+                <div class="field-wrap">
+                    <span class="row-label">Day (English)</span>
+                    <input class="form-control" type="text" value="${esc(row.days_en)}"
+                           placeholder="Day (English)" onchange="config.openingHours[${i}].days_en=this.value">
+                </div>
+                <div class="field-wrap nl-col">
+                    <span class="row-label">Dag (Nederlands)</span>
+                    <input class="form-control" type="text" value="${esc(row.days_nl)}"
+                           placeholder="Dag (NL)" onchange="config.openingHours[${i}].days_nl=this.value">
+                </div>
+                <div class="field-wrap">
+                    <span class="row-label">Hours / Closed</span>
+                    <input class="form-control" type="text" value="${esc(row.hours)}"
+                           placeholder="13:00 – 18:00 or Closed" onchange="config.openingHours[${i}].hours=this.value">
+                </div>
+                <button class="btn btn-danger btn-sm del-btn" onclick="removeHourRow(${i})">× Remove</button>
             </div>`).join('');
         }
         function addHourRow() {
