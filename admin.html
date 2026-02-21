@@ -862,14 +862,21 @@
             calendars: ['cal_feb_2025.jpeg', 'cal_maart_2025.jpeg']
         };
 
+        /* Decode base64-encoded UTF-8 bytes from GitHub API correctly (#179) */
+        function decodeBase64Utf8(b64) {
+            const clean = b64.replace(/\s/g, '');
+            const binary = atob(clean);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+            return new TextDecoder('utf-8').decode(bytes);
+        }
+
         async function loadConfig() {
             toast('Loading…', 'info');
             try {
                 const file = await wGet('config');
                 configSha = file.sha;
-                config = JSON.parse(atob(file.content.replace(/\s/g, '')));
-                // setConnected(true); // Removed
-                // document.getElementById('settingsPanel').classList.remove('open'); // Removed
+                config = JSON.parse(decodeBase64Utf8(file.content));
                 toast('Config loaded ✓', 'success');
             } catch (e) {
                 config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
@@ -1033,14 +1040,20 @@
 
         async function uploadCalendar(file) {
             if (!file) return;
+            const safeName = normalizeFilename(file.name); // (#427)
+            if (!isSafe(safeName)) {
+                toast('Filename not allowed. Please rename the file.', 'error');
+                document.getElementById('calInput').value = '';
+                return;
+            }
             toast(`Uploading ${file.name}…`, 'info');
             try {
                 const b64 = await toBase64(file);
-                const path = `assets/${file.name}`;
+                const path = `assets/${safeName}`;
                 let sha = null;
                 try { const ex = await wGetFile(path); sha = ex.sha; } catch { }
                 await wPut(path, b64, `Upload calendar: ${file.name}`, sha);
-                if (!config.calendars.includes(file.name)) config.calendars.push(file.name);
+                if (!config.calendars.includes(safeName)) config.calendars.push(safeName);
                 await saveConfig(`Add calendar: ${file.name}`);
                 toast(`${file.name} uploaded ✓  — site updates in ~30s`, 'success');
                 renderCalendars();

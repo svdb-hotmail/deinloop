@@ -803,6 +803,7 @@
     <script>
         /* ── Language switcher ───────────────────────────────────────── */
         function changeLanguage(lang) {
+            document.documentElement.lang = lang; // (#370) update <html lang> for screen readers
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const val = el.getAttribute('data-' + lang);
                 if (val !== null) el.textContent = val;
