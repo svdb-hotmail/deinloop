@@ -447,15 +447,11 @@
         /* Each slide: image fits width, height is natural */
         #photoSwiper {
             border-radius: 10px;
-            /* padding-bottom gives room for the pagination dots */
-            padding-bottom: 2.2rem;
+            overflow: hidden;
+            /* clip slides to container — NOT on wrapper */
         }
 
-        /* the actual slides area — clip images without clipping dots */
-        #photoSwiper .swiper-wrapper {
-            border-radius: 10px;
-            overflow: hidden;
-        }
+        /* wrapper must NOT have overflow:hidden — Swiper translates it */
 
         #photoSwiper .swiper-slide {
             display: flex;
@@ -500,20 +496,26 @@
             border-radius: 6px;
         }
 
-        /* Swiper pagination dots — tinted orange, sit in the padding-bottom gap */
-        .gallery-section .swiper-pagination {
-            bottom: 0.4rem;
+        /* Pagination dots — live OUTSIDE #photoSwiper so overflow:hidden doesn't clip them */
+        #swiperDots {
+            display: flex;
+            justify-content: center;
+            gap: .6rem;
+            margin-top: .9rem;
+            flex-wrap: wrap;
         }
 
-        .gallery-section .swiper-pagination-bullet {
+        #swiperDots .swiper-pagination-bullet {
             width: 10px;
             height: 10px;
             background: #bbb;
             opacity: 1;
+            border-radius: 50%;
+            cursor: pointer;
             transition: background .2s, transform .2s;
         }
 
-        .gallery-section .swiper-pagination-bullet-active {
+        #swiperDots .swiper-pagination-bullet-active {
             background: var(--orange);
             transform: scale(1.35);
         }
@@ -664,10 +666,11 @@
                 <div class="swiper-wrapper" id="swiperWrapper">
                     <!-- slides injected by JS -->
                 </div>
-                <div class="swiper-pagination"></div>
                 <div class="swiper-button-prev"></div>
                 <div class="swiper-button-next"></div>
             </div>
+            <!-- Pagination dots OUTSIDE the swiper so overflow:hidden doesn't clip them -->
+            <div id="swiperDots"></div>
         </div>
 
         <!-- ── How You Can Help ─────────────────────────────────────── -->
@@ -914,7 +917,7 @@
 
             swiperInstance = new Swiper('#photoSwiper', {
                 loop: photos.length > 1,
-                pagination: { el: '.swiper-pagination', clickable: true },
+                pagination: { el: '#swiperDots', clickable: true },
                 navigation: { prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' },
                 keyboard: { enabled: true },
                 a11y: true,
