@@ -9,6 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Swiper.js — proven mobile carousel library -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <style>
         /* ─── Design tokens ─────────────────────────────────────────── */
         :root {
@@ -421,12 +423,12 @@
         }
 
         /* ─── Responsive ────────────────────────────────────────────── */
-        /* ─── Gallery carousel ───────────────────────────────────────── */
+        /* ─── Gallery (Swiper) ───────────────────────────────────────── */
         .gallery-section {
             background: var(--white);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            padding: 2rem 2.25rem;
+            padding: 2rem 2.25rem 2.5rem;
             margin-bottom: 1.75rem;
             border-left: 4px solid var(--orange);
             overflow: hidden;
@@ -442,73 +444,47 @@
             gap: .5rem;
         }
 
-        .carousel-wrap {
-            position: relative;
-            /* hide nav arrows on touch devices — swipe is the gesture */
-            touch-action: pan-y;
-        }
-
-        .carousel-viewport {
-            overflow: hidden;
+        /* Each slide: image fits width, height is natural */
+        #photoSwiper {
             border-radius: 10px;
-            /* fixed 4:3 aspect ratio — never taller than screen */
-            aspect-ratio: 4 / 3;
-            background: #111;
+            overflow: hidden;
         }
 
-        .carousel-track {
-            display: flex;
-            height: 100%;
-            /* transition only when NOT dragging */
-            transition: transform .35s cubic-bezier(.4, 0, .2, 1);
-        }
-
-        .carousel-track.dragging {
-            transition: none;
-        }
-
-        .carousel-slide {
-            min-width: 100%;
-            height: 100%;
-            flex-shrink: 0;
+        #photoSwiper .swiper-slide {
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            border-radius: 10px;
+            background: #f5f0e8;
         }
 
-        .carousel-slide img {
+        #photoSwiper .swiper-slide img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* fill the box, no black bars */
-            object-position: center;
+            height: auto;
             display: block;
-            pointer-events: none;
-            /* prevent image drag interfering with swipe */
             -webkit-user-drag: none;
             user-select: none;
         }
 
-        .carousel-slide .placeholder {
+        /* placeholder when no photos yet */
+        .swiper-placeholder {
             width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #f5f0e8 0%, #ede8de 100%);
+            padding: 3rem 1rem;
+            background: linear-gradient(135deg, #f5f0e8, #ede8de);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: .75rem;
             color: var(--muted);
+            border-radius: 10px;
         }
 
-        .carousel-slide .placeholder .ph-icon {
+        .swiper-placeholder .ph-icon {
             font-size: 3rem;
             opacity: .5;
         }
 
-        .carousel-slide .placeholder .ph-label {
+        .swiper-placeholder .ph-label {
             font-size: .85rem;
             font-weight: 500;
             font-family: monospace;
@@ -517,66 +493,46 @@
             border-radius: 6px;
         }
 
-        /* Nav arrows — hidden on small/touch screens, visible on desktop */
-        .carousel-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, .92);
-            border: none;
-            border-radius: 50%;
-            width: 42px;
-            height: 42px;
-            font-size: 1.1rem;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, .15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background .2s, transform .15s;
-            z-index: 2;
-            color: var(--dark);
+        /* Swiper pagination dots — tinted orange */
+        #photoSwiper+.swiper-pagination,
+        .gallery-section .swiper-pagination {
+            bottom: -1.4rem;
         }
 
-        .carousel-btn:hover {
-            background: var(--orange);
-            color: #fff;
-            transform: translateY(-50%) scale(1.08);
-        }
-
-        .carousel-btn.prev {
-            left: .6rem;
-        }
-
-        .carousel-btn.next {
-            right: .6rem;
-        }
-
-        /* Dots — bigger on mobile so they're easy to tap */
-        .carousel-dots {
-            display: flex;
-            justify-content: center;
-            gap: .6rem;
-            margin-top: .9rem;
-            flex-wrap: wrap;
-        }
-
-        .carousel-dot {
+        .gallery-section .swiper-pagination-bullet {
             width: 10px;
             height: 10px;
-            border-radius: 50%;
-            background: #ddd;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-            /* bigger tap target without visible size change */
-            outline-offset: 4px;
-            transition: background .2s, transform .2s;
+            background: #ccc;
+            opacity: 1;
         }
 
-        .carousel-dot.active {
+        .gallery-section .swiper-pagination-bullet-active {
             background: var(--orange);
-            transform: scale(1.35);
+            transform: scale(1.3);
+        }
+
+        /* Swiper nav arrows — styled to match the site */
+        .gallery-section .swiper-button-prev,
+        .gallery-section .swiper-button-next {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, .92);
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .15);
+            color: var(--dark);
+            top: 50%;
+        }
+
+        .gallery-section .swiper-button-prev::after,
+        .gallery-section .swiper-button-next::after {
+            font-size: .9rem;
+            font-weight: 700;
+        }
+
+        .gallery-section .swiper-button-prev:hover,
+        .gallery-section .swiper-button-next:hover {
+            background: var(--orange);
+            color: #fff;
         }
 
         @media (max-width: 620px) {
@@ -596,21 +552,15 @@
                 grid-template-columns: 1fr;
             }
 
-            /* Hide arrow buttons on phones — swipe handles it */
-            .carousel-btn {
+            /* arrows hidden on phone — swipe does it */
+            .gallery-section .swiper-button-prev,
+            .gallery-section .swiper-button-next {
                 display: none;
             }
 
-            /* Remove card padding so carousel edge-to-edge */
             .gallery-section {
                 padding-left: 1rem;
                 padding-right: 1rem;
-            }
-
-            /* Taller dots for easier tapping */
-            .carousel-dot {
-                width: 12px;
-                height: 12px;
             }
         }
     </style>
@@ -702,22 +652,15 @@
         <!-- ── Photo Gallery ──────────────────────────────────────────── -->
         <div class="gallery-section" id="gallery">
             <h2><span>📸</span> <span data-lang data-en="Photo Gallery" data-nl="Fotogalerij">Photo Gallery</span></h2>
-            <div class="carousel-wrap">
-                <div class="carousel-viewport" id="carouselViewport">
-                    <div class="carousel-track" id="carouselTrack">
-
-                        <!-- slides injected by JS from assets/config.json -->
-
-                    </div><!-- /.carousel-track -->
-                </div><!-- /.carousel-viewport -->
-
-                <button class="carousel-btn prev" id="carouselPrev" aria-label="Previous photo" data-lang
-                    data-en="Previous photo" data-nl="Vorige foto">&#8592;</button>
-                <button class="carousel-btn next" id="carouselNext" aria-label="Next photo" data-lang
-                    data-en="Next photo" data-nl="Volgende foto">&#8594;</button>
-            </div><!-- /.carousel-wrap -->
-
-            <div class="carousel-dots" id="carouselDots"></div>
+            <!-- Swiper markup -->
+            <div class="swiper" id="photoSwiper">
+                <div class="swiper-wrapper" id="swiperWrapper">
+                    <!-- slides injected by JS -->
+                </div>
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
         </div>
 
         <!-- ── How You Can Help ─────────────────────────────────────── -->
@@ -837,6 +780,7 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         /* ── Language switcher ───────────────────────────────────────── */
         function changeLanguage(lang) {
@@ -892,30 +836,10 @@
         }
 
         function renderGallery(photos) {
-            const track = document.getElementById('carouselTrack');
-            track.innerHTML = '';
-            const lang = document.getElementById('btn-nl').classList.contains('active') ? 'nl' : 'en';
-            if (!Array.isArray(photos) || !photos.length) {
-                // Localised placeholder (#2)
-                const slide = document.createElement('div');
-                slide.className = 'carousel-slide';
-                slide.innerHTML = `<div class="placeholder">
-                    <span class="ph-icon">📷</span>
-                    <span class="ph-label" data-lang data-en="Photos coming soon" data-nl="Foto's volgen binnenkort">${lang === 'nl' ? "Foto's volgen binnenkort" : 'Photos coming soon'}</span>
-                </div>`;
-                track.appendChild(slide);
-            } else {
-                photos.forEach(f => {
-                    if (!safeName(f)) return; // (#15)
-                    const slide = document.createElement('div');
-                    slide.className = 'carousel-slide';
-                    const img = document.createElement('img');
-                    img.src = 'assets/gallery/' + encodeURIComponent(f);
-                    img.alt = f;
-                    slide.appendChild(img);
-                    track.appendChild(slide);
-                });
-            }
+            // Store validated list; initCarousel (Swiper) handles all DOM work
+            window._galleryPhotos = Array.isArray(photos)
+                ? photos.filter(f => safeName(f))
+                : [];
             initCarousel();
         }
 
@@ -948,95 +872,47 @@
             }
         }
 
-        /* ── Carousel (called after gallery is rendered) ─────────────── */
+        /* ── Swiper init (called after gallery is rendered) ─────────── */
+        let swiperInstance = null;
         function initCarousel() {
-            const track = document.getElementById('carouselTrack');
-            const dotsEl = document.getElementById('carouselDots');
-            const vp = document.getElementById('carouselViewport');
-            const slides = track.querySelectorAll('.carousel-slide');
-            const total = slides.length;
-            let cur = 0;
-            dotsEl.innerHTML = '';
 
-            /* ── dots ── */
-            slides.forEach((_, i) => {
-                const d = document.createElement('button');
-                d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-                const lang = document.getElementById('btn-nl').classList.contains('active') ? 'nl' : 'en';
-                const prefix = lang === 'nl' ? 'Ga naar foto ' : 'Go to photo ';
-                d.setAttribute('aria-label', prefix + (i + 1));
-                d.addEventListener('click', () => goTo(i));
-                dotsEl.appendChild(d);
-            });
+            if (swiperInstance) { swiperInstance.destroy(true, true); swiperInstance = null; }
 
-            /* ── navigation ── */
-            function goTo(idx) {
-                cur = (idx + total) % total;
-                track.style.transform = `translateX(-${cur * 100}%)`;
-                dotsEl.querySelectorAll('.carousel-dot')
-                    .forEach((d, i) => d.classList.toggle('active', i === cur));
+            const wrapper = document.getElementById('swiperWrapper');
+            wrapper.innerHTML = '';
+            const lang = document.getElementById('btn-nl').classList.contains('active') ? 'nl' : 'en';
+            const photos = window._galleryPhotos || [];
+
+            if (!photos.length) {
+                /* placeholder slide */
+                const slide = document.createElement('div');
+                slide.className = 'swiper-slide';
+                slide.innerHTML = `<div class="swiper-placeholder">
+                    <span class="ph-icon">📷</span>
+                    <span class="ph-label">${lang === 'nl' ? "Foto's volgen binnenkort" : 'Photos coming soon'}</span>
+                </div>`;
+                wrapper.appendChild(slide);
+            } else {
+                photos.forEach(f => {
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    const img = document.createElement('img');
+                    img.src = 'assets/gallery/' + encodeURIComponent(f);
+                    img.alt = f;
+                    img.loading = 'lazy';
+                    slide.appendChild(img);
+                    wrapper.appendChild(slide);
+                });
             }
 
-            document.getElementById('carouselPrev').onclick = () => goTo(cur - 1);
-            document.getElementById('carouselNext').onclick = () => goTo(cur + 1);
-
-            /* keyboard */
-            document.addEventListener('keydown', e => {
-                if (e.key === 'ArrowLeft') goTo(cur - 1);
-                if (e.key === 'ArrowRight') goTo(cur + 1);
+            swiperInstance = new Swiper('#photoSwiper', {
+                loop: photos.length > 1,
+                pagination: { el: '.swiper-pagination', clickable: true },
+                navigation: { prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' },
+                keyboard: { enabled: true },
+                a11y: true,
+                grabCursor: true,
             });
-
-            /* ── touch / swipe with live drag feedback ── */
-            let touchStartX = 0;
-            let touchStartY = 0;
-            let dragging = false;
-            let swipeLocked = null; // 'h' | 'v'
-
-            vp.addEventListener('touchstart', e => {
-                touchStartX = e.touches[0].clientX;
-                touchStartY = e.touches[0].clientY;
-                dragging = true;
-                swipeLocked = null;
-            }, { passive: true });
-
-            vp.addEventListener('touchmove', e => {
-                if (!dragging) return;
-                const dx = e.touches[0].clientX - touchStartX;
-                const dy = e.touches[0].clientY - touchStartY;
-
-                /* decide axis on first significant move */
-                if (!swipeLocked) {
-                    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 5) swipeLocked = 'h';
-                    else if (Math.abs(dy) > 5) swipeLocked = 'v';
-                    else return;
-                }
-
-                if (swipeLocked === 'h') {
-                    /* live-drag the track so it feels physical */
-                    const base = cur * 100;
-                    const pct = (dx / vp.offsetWidth) * 100;
-                    track.classList.add('dragging');
-                    track.style.transform = `translateX(calc(-${base}% + ${dx}px))`;
-                }
-            }, { passive: true });
-
-            vp.addEventListener('touchend', e => {
-                if (!dragging) return;
-                dragging = false;
-                track.classList.remove('dragging');
-                if (swipeLocked !== 'h') return;
-                const dx = e.changedTouches[0].clientX - touchStartX;
-                const threshold = vp.offsetWidth * 0.25; /* 25 % of width */
-                if (dx < -threshold) goTo(cur + 1);
-                else if (dx > threshold) goTo(cur - 1);
-                else goTo(cur);     /* snap back */
-            }, { passive: true });
-
-            vp.addEventListener('touchcancel', () => {
-                dragging = false;
-                track.classList.remove('dragging');
-                goTo(cur);
-            }, { passive: true });
         }
 
         document.addEventListener('DOMContentLoaded', loadConfig);
