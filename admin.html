@@ -657,15 +657,18 @@
 
     <script>
         /* ================================================================
-         *  CONFIG — only two things to set here.
-         *  Everything else (GitHub PAT, repo, branch) lives on Cloudflare.
-         *  This file can now be safely committed to the repo.
+         *  CONFIG — only the Worker URL goes here.
+         *  The admin password is entered at login and validated server-side
+         *  by the Cloudflare Worker. It is never stored in this file.
          * ================================================================ */
         const CONFIG = {
-            password: 'deinloop2025',                                              // ← change this
-            workerUrl: 'https://deinloop-admin.samuel-vandenbergh.workers.dev'     // Cloudflare Worker
+            workerUrl: 'https://deinloop-admin.samuel-vandenbergh.workers.dev'  // Cloudflare Worker
         };
         /* ================================================================ */
+
+        /* Runtime password — set after successful Worker auth, tab-only */
+        const PW_KEY = 'di_admin_pw';
+        function getStoredPw() { return sessionStorage.getItem(PW_KEY) || localStorage.getItem(PW_KEY) || ''; }
 
         /* ── State ─────────────────────────────────────────────────── */
         let config = null;
@@ -724,7 +727,12 @@
                         timeout: 60000
                     }
                 });
-                if (cred) { doLogin(); }
+                if (cred) {
+                    // Restore password from localStorage so Worker calls work after biometric login
+                    const storedPw = localStorage.getItem(PW_KEY);
+                    if (storedPw) sessionStorage.setItem(PW_KEY, storedPw);
+                    doLogin();
+                }
             } catch (e) {
                 // User cancelled or failed — fall back to password silently
                 if (e.name !== 'NotAllowedError') {
@@ -755,9 +763,11 @@
                         timeout: 60000
                     }
                 });
-                // Store credential ID (base64) for future use
+                // Store credential ID (base64) for future biometric use
                 const id64 = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
                 localStorage.setItem(CRED_KEY, id64);
+                // Also persist password in localStorage so biometric login can restore it
+                localStorage.setItem(PW_KEY, getStoredPw());
                 document.getElementById('biometricPrompt').style.display = 'none';
                 toast('Face ID / Touch ID enabled! 👍 Next login will use biometrics.', 'success');
             } catch (e) {
@@ -772,23 +782,35 @@
             initAdmin();
         }
 
-        function login() {
-            const pw = document.getElementById('passwordInput').value;
-            if (pw === CONFIG.password) {
+        async function login() {
+            const pw = document.getElementById('passwordInput').value.trim();
+            if (!pw) return;
+            // Validate against Worker (avoids ever storing the password in source code)
+            document.getElementById('loginErr').textContent = '';
+            try {
+                const res = await fetch(`${CONFIG.workerUrl}/config`, {
+                    headers: { 'Authorization': `Bearer ${pw}` }
+                });
+                if (res.status === 401) {
+                    document.getElementById('loginErr').textContent = 'Incorrect password.';
+                    document.getElementById('passwordInput').value = '';
+                    return;
+                }
+                // Password accepted — store for this session's Worker calls
+                sessionStorage.setItem(PW_KEY, pw);
                 doLogin();
-                // Offer biometrics registration if WebAuthn is supported and not yet set up
                 if (supportsWebAuthn() && !localStorage.getItem(CRED_KEY)) {
                     PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(has => {
                         if (has) document.getElementById('biometricPrompt').style.display = 'block';
                     });
                 }
-            } else {
-                document.getElementById('loginErr').textContent = 'Incorrect password.';
-                document.getElementById('passwordInput').value = '';
+            } catch {
+                document.getElementById('loginErr').textContent = 'Could not reach server. Check your connection.';
             }
         }
         function logout() {
             sessionStorage.removeItem('di_auth');
+            sessionStorage.removeItem(PW_KEY);
             location.reload();
         }
 
@@ -807,7 +829,7 @@
         /* ── Worker API helpers ────────────────────────────────────── */
         function wHeaders() {
             return {
-                'Authorization': `Bearer ${CONFIG.password}`,
+                'Authorization': `Bearer ${getStoredPw()}`,
                 'Content-Type': 'application/json'
             };
         }
