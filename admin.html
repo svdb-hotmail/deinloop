@@ -1004,7 +1004,9 @@
         }
 
         async function uploadPhotos(files) {
-            for (const file of Array.from(files)) {
+            const fileList = Array.from(files);
+            let uploaded = 0;
+            for (const file of fileList) {
                 const safeName = normalizeFilename(file.name); // (#18)
                 toast(`Uploading ${file.name}…`, 'info');
                 try {
@@ -1014,9 +1016,16 @@
                     try { const ex = await wGetFile(path); sha = ex.sha; } catch { }
                     await wPut(path, b64, `Add gallery photo: ${file.name}`, sha);
                     if (!config.gallery.includes(safeName)) config.gallery.push(safeName);
-                    await saveConfig(`Add gallery photo: ${file.name}`);
-                    toast(`${file.name} uploaded ✓  — site updates in ~30s`, 'success');
+                    uploaded++;
+                    toast(`${file.name} uploaded ✓`, 'success');
                 } catch (e) { toast(`Error: ${e.message}`, 'error'); }
+            }
+            if (uploaded > 0) {
+                const msg = uploaded === 1
+                    ? `Add gallery photo: ${normalizeFilename(fileList[0].name)}`
+                    : `Add ${uploaded} gallery photos`;
+                await saveConfig(msg);
+                toast('Gallery saved — site updates in ~30s', 'success');
             }
             document.getElementById('galleryInput').value = '';
             renderGallery();
