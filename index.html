@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" id="html">
+<html lang="nl" id="html">
 
 <head>
     <meta charset="UTF-8">
@@ -407,6 +407,36 @@
         }
 
         /* ─── Footer ────────────────────────────────────────────────── */
+        .partner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+            gap: 1rem;
+            list-style: none;
+        }
+
+        .partner-grid a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 130px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--white);
+        }
+
+        .partner-grid a:hover,
+        .partner-grid a:focus-visible {
+            outline: 2px solid var(--orange);
+            outline-offset: 3px;
+        }
+
+        .partner-grid img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
         footer {
             background: var(--dark);
             color: rgba(255, 255, 255, .6);
@@ -611,8 +641,8 @@
                 <li><a href="#contact" data-lang data-en="Contact" data-nl="Contact">Contact</a></li>
             </ul>
             <div class="lang-toggle">
-                <button onclick="changeLanguage('en')" id="btn-en" class="active">EN</button>
-                <button onclick="changeLanguage('nl')" id="btn-nl">NL</button>
+                <button onclick="changeLanguage('en')" id="btn-en">EN</button>
+                <button onclick="changeLanguage('nl')" id="btn-nl" class="active">NL</button>
             </div>
         </div>
     </nav>
@@ -824,11 +854,34 @@
             </div>
         </div>
 
+        <section class="card" id="partners" aria-labelledby="partners-heading">
+            <h2 id="partners-heading" data-lang data-en="Our Partners" data-nl="Onze Partners">Onze Partners</h2>
+            <ul class="partner-grid">
+                <li><a href="https://www.aipchurch.org/" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/partners/AIPC.png" alt="AIPC" loading="lazy">
+                </a></li>
+                <li><a href="https://lexecobvba.be/" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/partners/LEXECO.jpeg" alt="LEXECO" loading="lazy">
+                </a></li>
+                <li><a href="https://www.debrugonline.be/" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/partners/DeBrug.jpg" alt="De Brug" loading="lazy">
+                </a></li>
+                <li><a href="https://eurocasco.be/" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/partners/EUROCASCO.jpeg" alt="EUROCASCO" loading="lazy">
+                </a></li>
+                <li><a href="https://zorgpuntwaasland.be/" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/partners/Zorgpunt.jpg" alt="Zorgpunt" loading="lazy">
+                </a></li>
+            </ul>
+        </section>
+
     </div><!-- /.page -->
 
     <!-- ── Footer ──────────────────────────────────────────────────── -->
     <footer>
-        <p class="footer-quote">"Every contribution… big or small, helps us to be a light in someone's darkness."</p>
+        <p class="footer-quote" data-lang
+            data-en="&quot;Every contribution… big or small, helps us to be a light in someone's darkness.&quot;"
+            data-nl="&quot;Elke bijdrage… groot of klein, helpt ons een licht te zijn in iemands duisternis.&quot;">"Elke bijdrage… groot of klein, helpt ons een licht te zijn in iemands duisternis."</p>
         <p class="footer-copy">Copyright © De Inloop</p>
         <div class="footer-links">
             <a href="privacy.html" data-lang data-en="Privacy Policy" data-nl="Privacybeleid">Privacy Policy</a>
@@ -971,6 +1024,7 @@
             });
         }
 
+        changeLanguage('nl');
         document.addEventListener('DOMContentLoaded', loadConfig);
     </script>
 </body>
